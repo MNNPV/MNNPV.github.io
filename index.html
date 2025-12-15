@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hello World - Team Dev</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family:  -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans', Helvetica, Arial, sans-serif;
+            background-color: #0d1117;
+            color: #c9d1d9;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin:  0 auto;
+            padding: 40px 20px;
+        }
+
+        header {
+            text-align: center;
+            padding: 60px 0;
+            border-bottom: 1px solid #21262d;
+        }
+
+        h1 {
+            font-size: 48px;
+            font-weight:  600;
+            color: #58a6ff;
+            margin-bottom: 20px;
+        }
+
+        .subtitle {
+            font-size: 20px;
+            color: #8b949e;
+            margin-bottom: 30px;
+        }
+
+        . badge {
+            display: inline-block;
+            padding: 5px 12px;
+            margin: 5px;
+            background-color: #21262d;
+            border: 1px solid #30363d;
+            border-radius: 20px;
+            font-size: 14px;
+            color: #58a6ff;
+        }
+
+        .section {
+            margin: 60px 0;
+        }
+
+        h2 {
+            font-size: 32px;
+            font-weight: 600;
+            margin-bottom: 30px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #21262d;
+            color:  #c9d1d9;
+        }
+
+        .team-grid {
+            display: grid;
+            grid-template-columns:  repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+            margin-top: 30px;
+        }
+
+        . team-member {
+            background-color: #161b22;
+            border: 1px solid #30363d;
+            border-radius: 6px;
+            padding: 30px;
+            text-align: center;
+            transition: transform 0.2s, border-color 0.2s;
+        }
+
+        . team-member:hover {
+            transform: translateY(-5px);
+            border-color: #58a6ff;
+        }
+
+        .avatar {
+            width: 120px;
+            height:  120px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #58a6ff, #bc8cff);
+            margin:  0 auto 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 48px;
+            font-weight: bold;
+            color: #fff;
+        }
+
+        .team-member h3 {
+            font-size: 20px;
+            margin-bottom: 8px;
+            color: #58a6ff;
+        }
+
+        . role {
+            color: #8b949e;
+            font-size: 14px;
+            margin-bottom: 15px;
+        }
+
+        .social-links {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        . social-links a {
+            color: #8b949e;
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        . social-links a:hover {
+            color: #58a6ff;
+        }
+
+        .code-block {
+            background-color: #161b22;
+            border: 1px solid #30363d;
+            border-radius: 6px;
+            padding: 20px;
+            margin: 20px 0;
+            overflow-x: auto;
+        }
+
+        .code-block code {
+            color: #79c0ff;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 12px 24px;
+            background-color: #238636;
+            color: #fff;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: 500;
+            transition:  background-color 0.2s;
+            margin: 10px 5px;
+        }
+
+        .btn:hover {
+            background-color: #2ea043;
+        }
+
+        .btn-secondary {
+            background-color: #21262d;
+            border: 1px solid #30363d;
+        }
+
+        .btn-secondary:hover {
+            background-color: #30363d;
+        }
+
+        footer {
+            text-align: center;
+            padding: 40px 0;
+            border-top: 1px solid #21262d;
+            color: #8b949e;
+            margin-top: 60px;
+        }
+
+        .stats {
+            display: flex;
+            justify-content: center;
+            gap:  40px;
+            margin:  30px 0;
+            flex-wrap: wrap;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size:  32px;
+            font-weight: 600;
+            color: #58a6ff;
+        }
+
+        .stat-label {
+            color: #8b949e;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Hello World! </h1>
+            <p class="subtitle">Welcome to our development team project</p>
+            <div>
+                <span class="badge">Open Source</span>
+                <span class="badge">In Development</span>
+                <span class="badge">Team Collaboration</span>
+            </div>
+            <div style="margin-top: 30px;">
+                <a href="#team" class="btn">Meet the Team</a>
+                <a href="#code" class="btn btn-secondary">View Code</a>
+            </div>
+        </header>
+
+        <div class="stats">
+            <div class="stat-item">
+                <div class="stat-number">5</div>
+                <div class="stat-label">Team Members</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number">42</div>
+                <div class="stat-label">Commits</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number">12</div>
+                <div class="stat-label">Pull Requests</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number">100%</div>
+                <div class="stat-label">Awesome</div>
+            </div>
+        </div>
+
+        <section class="section" id="code">
+            <h2>Code Example</h2>
+            <p style="margin-bottom: 20px;">Here's the classic "Hello World" in multiple languages:</p>
+            
+            <div class="code-block">
+                <code>
+// JavaScript<br>
+console.log("Hello, World!");<br><br>
+# Python<br>
+print("Hello, World!")<br><br>
+// Java<br>
+System.out.println("Hello, World!");<br><br>
+<!-- HTML --><br>
+&lt;h1&gt;Hello, World!&lt;/h1&gt;
+                </code>
+            </div>
+        </section>
+
+        <section class="section" id="team">
+            <h2>Our Development Team</h2>
+            <div class="team-grid">
+                <div class="team-member">
+                    <div class="avatar">A</div>
+                    <h3>Alice Johnson</h3>
+                    <p class="role">Lead Developer</p>
+                    <p>Full-stack engineer with passion for clean code and architecture. </p>
+                    <div class="social-links">
+                        <a href="#" title="GitHub">GitHub</a>
+                        <a href="#" title="LinkedIn">LinkedIn</a>
+                    </div>
+                </div>
+
+                <div class="team-member">
+                    <div class="avatar" style="background: linear-gradient(135deg, #bc8cff, #ff7eb6);">B</div>
+                    <h3>Bob Smith</h3>
+                    <p class="role">Frontend Developer</p>
+                    <p>UI/UX enthusiast specializing in React and modern web technologies.</p>
+                    <div class="social-links">
+                        <a href="#" title="GitHub">GitHub</a>
+                        <a href="#" title="LinkedIn">LinkedIn</a>
+                    </div>
+                </div>
+
+                <div class="team-member">
+                    <div class="avatar" style="background: linear-gradient(135deg, #56d364, #3fb950);">C</div>
+                    <h3>Carol Davis</h3>
+                    <p class="role">Backend Developer</p>
+                    <p>Database wizard and API architect with expertise in Node.js.</p>
+                    <div class="social-links">
+                        <a href="#" title="GitHub">GitHub</a>
+                        <a href="#" title="LinkedIn">LinkedIn</a>
+                    </div>
+                </div>
+
+                <div class="team-member">
+                    <div class="avatar" style="background: linear-gradient(135deg, #ffa657, #ff7b72);">D</div>
+                    <h3>David Lee</h3>
+                    <p class="role">DevOps Engineer</p>
+                    <p>Cloud infrastructure expert ensuring smooth deployments 24/7.</p>
+                    <div class="social-links">
+                        <a href="#" title="GitHub">GitHub</a>
+                        <a href="#" title="LinkedIn">LinkedIn</a>
+                    </div>
+                </div>
+
+                <div class="team-member">
+                    <div class="avatar" style="background: linear-gradient(135deg, #79c0ff, #58a6ff);">E</div>
+                    <h3>Emma Wilson</h3>
+                    <p class="role">QA Engineer</p>
+                    <p>Quality advocate ensuring every feature works flawlessly.</p>
+                    <div class="social-links">
+                        <a href="#" title="GitHub">GitHub</a>
+                        <a href="#" title="LinkedIn">LinkedIn</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <footer>
+            <p>Made with care by the Dev Team</p>
+            <p style="margin-top: 10px; font-size: 14px;">2025 Hello World Project. MIT License.</p>
+        </footer>
+    </div>
+</body>
+</html>

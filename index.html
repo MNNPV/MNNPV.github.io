@@ -1,28 +1,28 @@
 <!DOCTYPE html>
-<html lang="km">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>mnnpv // ប្រព័ន្ធស្រាវជ្រាវ</title>
-    <!-- Import Google Font for Khmer -->
-    <link href="https://fonts.googleapis.com/css2?family=Battambang:wght@400;700&family=Fira+Code:wght@400;700&display=swap" rel="stylesheet">
+    <title>POS System Research Dissertation</title>
     <style>
+        /* --- 1. CORE VARIABLES & RESET (GitHub-like Style, No Gradients) --- */
         :root {
-            /* GitHub Dark Mode Palette */
-            --bg-canvas: #0d1117;
-            --bg-panel: #161b22;
-            --bg-subtle: #21262d;
-            --border: #30363d;
-            --text-main: #c9d1d9;
-            --text-muted: #8b949e;
-            --accent-blue: #58a6ff;
-            --accent-green: #238636;
-            --accent-red: #da3633;
-            --accent-orange: #d29922;
+            /* GitHub-inspired flat palette */
+            --color-bg: #ffffff;
+            --color-bg-secondary: #f6f8fa;
+            --color-border: #d0d7de;
+            --color-text-primary: #24292f;
+            --color-text-secondary: #57606a;
+            --color-accent: #0969da; /* GitHub Blue */
+            --color-accent-hover: #0758b6;
+            --color-success: #1a7f37;
+            --color-attention: #9a6700;
+            --color-danger: #cf222e;
             
-            /* FUI Settings */
-            --corner-clip: 15px;
-            --gap: 20px;
+            /* Spacing & Layout */
+            --spacing-unit: 8px;
+            --container-width: 1200px;
+            --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
         }
 
         * {
@@ -32,546 +32,380 @@
         }
 
         body {
-            font-family: 'Battambang', 'Fira Code', monospace; /* Khmer font + Monospace */
-            background-color: var(--bg-canvas);
-            color: var(--text-main);
-            line-height: 1.6;
-            height: 100vh;
-            overflow: hidden;
+            font-family: var(--font-family);
+            color: var(--color-text-primary);
+            background-color: var(--color-bg);
+            line-height: 1.5;
             display: flex;
             flex-direction: column;
+            min-height: 100vh;
         }
 
-        /* --- FUI UTILITIES --- */
-        .fui-box {
-            background-color: var(--bg-panel);
-            border: 1px solid var(--border);
-            /* Angled corners: Top-Left, Top-Right, Bottom-Right cut, Bottom-Left */
-            clip-path: polygon(
-                var(--corner-clip) 0, 
-                100% 0, 
-                100% calc(100% - var(--corner-clip)), 
-                calc(100% - var(--corner-clip)) 100%, 
-                0 100%, 
-                0 var(--corner-clip)
-            );
-            padding: 25px;
-            position: relative;
-            height: 100%;
-        }
+        a { text-decoration: none; color: var(--color-accent); }
+        a:hover { text-decoration: underline; }
 
-        .fui-box::before {
-            /* Decorative line for FUI style */
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 30px;
-            height: 30px;
-            border-top: 2px solid var(--accent-blue);
-            border-left: 2px solid var(--accent-blue);
-        }
-
-        .fui-btn {
-            background: var(--bg-subtle);
-            color: var(--text-main);
-            border: 1px solid var(--border);
-            padding: 12px 20px;
-            cursor: pointer;
-            text-transform: uppercase;
-            font-weight: bold;
-            font-family: 'Battambang', sans-serif;
-            clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px);
-            transition: all 0.2s ease;
-            text-align: left;
-            font-size: 0.95rem;
-        }
-
-        .fui-btn:hover, .fui-btn.active {
-            background: var(--accent-blue);
-            color: var(--bg-canvas);
-            border-color: var(--accent-blue);
-        }
-
-        .fui-tag {
-            font-size: 0.75rem;
-            padding: 3px 10px;
-            border: 1px solid var(--accent-blue);
-            color: var(--accent-blue);
-            display: inline-block;
-            margin-top: 5px;
-        }
-
-        .status-dot {
-            width: 8px;
-            height: 8px;
-            background-color: var(--accent-green);
-            display: inline-block;
-            margin-right: 8px;
-            border-radius: 50%;
-        }
-
-        .blink {
-            animation: blinker 2s linear infinite;
-        }
-
-        @keyframes blinker {
-            50% { opacity: 0; }
-        }
-
-        /* --- LAYOUT --- */
+        /* --- 2. NAVIGATION (Brand.youtube style - Clean, Sticky) --- */
         header {
-            padding: 15px 25px;
-            border-bottom: 1px solid var(--border);
+            border-bottom: 1px solid var(--color-border);
+            position: sticky;
+            top: 0;
+            background: var(--color-bg);
+            z-index: 100;
+            padding: 1rem 0;
+        }
+
+        .container {
+            max-width: var(--container-width);
+            margin: 0 auto;
+            padding: 0 2rem;
             display: flex;
-            justify-content: space-between;
             align-items: center;
-            background: var(--bg-canvas);
-            z-index: 10;
+            justify-content: space-between;
         }
 
-        .brand {
-            font-size: 1.4rem;
-            letter-spacing: 1px;
-            color: var(--accent-blue);
-            font-weight: bold;
-            font-family: 'Fira Code', monospace;
+        .brand-logo {
+            font-weight: 700;
+            font-size: 1.25rem;
+            color: var(--color-text-primary);
+            letter-spacing: -0.5px;
         }
 
-        .layout-container {
+        nav ul {
             display: flex;
-            flex: 1;
-            overflow: hidden;
+            list-style: none;
+            gap: 2rem;
         }
 
-        /* --- SIDEBAR NAV --- */
-        nav {
-            width: 280px;
-            background: var(--bg-canvas);
-            border-right: 1px solid var(--border);
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
+        nav a {
+            color: var(--color-text-secondary);
+            font-weight: 600;
+            font-size: 0.95rem;
+            padding: 0.5rem 0;
+            border-bottom: 2px solid transparent;
+            transition: all 0.2s ease;
         }
 
-        /* --- MAIN CONTENT --- */
+        nav a:hover, nav a.active {
+            color: var(--color-text-primary);
+            border-bottom-color: var(--color-accent);
+            text-decoration: none;
+        }
+
+        /* --- 3. PAGE STRUCTURE (SPA Logic) --- */
         main {
             flex: 1;
-            overflow-y: auto;
-            padding: 30px;
-            position: relative;
+            max-width: var(--container-width);
+            margin: 0 auto;
+            width: 100%;
+            padding: 3rem 2rem;
         }
 
-        /* Background Grid Line Effect */
-        main::after {
-            content: "";
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background-image: 
-                linear-gradient(rgba(48, 54, 61, 0.1) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(48, 54, 61, 0.1) 1px, transparent 1px);
-            background-size: 20px 20px;
-            pointer-events: none;
-            z-index: -1;
+        .page-section {
+            display: none; /* Hidden by default for SPA */
+            animation: fadeIn 0.3s ease-in-out;
         }
 
-        /* --- SECTIONS (SPA LOGIC) --- */
-        section {
-            display: none;
-            animation: fadeIn 0.4s ease-in-out;
-        }
-
-        section.active-section {
+        .page-section.active {
             display: block;
         }
 
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(15px); }
+            from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
         }
 
-        h1 { 
-            border-bottom: 2px solid var(--border); 
-            padding-bottom: 15px; 
-            color: var(--accent-blue);
-            margin-bottom: 25px;
-            font-size: 1.8rem;
-        }
+        h1, h2, h3 { margin-bottom: 1rem; color: var(--color-text-primary); }
+        h1 { font-size: 2.5rem; letter-spacing: -1px; }
+        h2 { font-size: 1.75rem; border-bottom: 1px solid var(--color-border); padding-bottom: 0.5rem; margin-top: 2rem; }
+        p { margin-bottom: 1rem; color: var(--color-text-secondary); max-width: 800px; font-size: 1.1rem; }
 
-        h2, h3 {
-            margin-bottom: 15px;
-            color: var(--text-main);
-        }
+        /* --- 4. SECTIONS SPECIFIC STYLES --- */
 
-        p {
-            margin-bottom: 15px;
-            color: var(--text-muted);
+        /* Home / Abstract */
+        .hero {
+            padding: 4rem 0;
         }
-
-        /* --- SPECIFIC MODULES --- */
         
-        .grid-3 {
+        .card-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 25px;
-            margin-bottom: 30px;
+            gap: 2rem;
+            margin-top: 2rem;
         }
 
-        .grid-2 {
+        .card {
+            border: 1px solid var(--color-border);
+            border-radius: 6px;
+            padding: 2rem;
+            background: var(--color-bg-secondary);
+        }
+
+        /* Brand Guide (GitHub Colors, No Icons) */
+        .color-palette {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+        }
+
+        .color-swatch {
+            width: 120px;
+            height: 120px;
+            border-radius: 6px;
+            border: 1px solid var(--color-border);
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            padding: 0.75rem;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+        
+        .swatch-text { background: rgba(255,255,255,0.9); padding: 4px; border-radius: 4px; text-align: center; }
+
+        /* Schedule (Jira Style Board) */
+        .jira-board {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
-            gap: 25px;
-            margin-bottom: 30px;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+            overflow-x: auto;
         }
 
-        /* Timeline */
-        .timeline-item {
-            border-left: 2px solid var(--border);
-            margin-left: 10px;
-            padding-left: 25px;
-            padding-bottom: 35px;
-            position: relative;
+        .jira-column {
+            background: var(--color-bg-secondary);
+            border-radius: 6px;
+            border: 1px solid var(--color-border);
+            padding: 1rem;
+            min-height: 400px;
         }
 
-        .timeline-item:last-child {
-            padding-bottom: 0;
-            border-left: 2px solid transparent;
+        .jira-header {
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            font-weight: 700;
+            color: var(--color-text-secondary);
+            margin-bottom: 1rem;
+            display: flex;
+            justify-content: space-between;
         }
 
-        .timeline-item::before {
-            content: '';
-            width: 12px;
-            height: 12px;
-            background: var(--bg-canvas);
-            border: 2px solid var(--accent-blue);
-            position: absolute;
-            left: -7px;
-            top: 5px;
+        .jira-card {
+            background: var(--color-bg);
+            border: 1px solid var(--color-border);
+            border-radius: 4px;
+            padding: 1rem;
+            margin-bottom: 0.75rem;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+            font-size: 0.95rem;
         }
 
-        .timeline-header {
-            color: var(--accent-blue);
-            font-weight: bold;
-            font-size: 1.1rem;
-            margin-bottom: 8px;
+        .tag {
+            display: inline-block;
+            padding: 2px 6px;
+            border-radius: 10px;
+            font-size: 0.75rem;
+            margin-top: 0.5rem;
+            font-weight: 600;
         }
+        .tag-research { background: #ddf4ff; color: #0969da; }
+        .tag-dev { background: #dafbe1; color: #1a7f37; }
+        .tag-write { background: #fff8c5; color: #9a6700; }
 
-        /* Team Cards */
-        .team-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 25px;
-        }
-
-        .role-label {
-            color: var(--text-muted);
-            font-size: 0.9rem;
-            margin-bottom: 10px;
-            display: block;
-        }
-
-        /* --- RESPONSIVE --- */
-        @media (max-width: 900px) {
-            .layout-container {
-                flex-direction: column;
-            }
-            nav {
-                width: 100%;
-                flex-direction: row;
-                overflow-x: auto;
-                border-right: none;
-                border-bottom: 1px solid var(--border);
-                padding: 15px;
-                gap: 10px;
-            }
-            .fui-btn {
-                white-space: nowrap;
-                font-size: 0.85rem;
-                padding: 10px 15px;
-            }
-            main {
-                padding: 20px;
-            }
-            h1 { font-size: 1.4rem; }
+        /* Responsive Utilities */
+        @media (max-width: 768px) {
+            .container { padding: 0 1rem; flex-direction: column; gap: 1rem; }
+            nav ul { gap: 1rem; flex-wrap: wrap; justify-content: center; }
+            h1 { font-size: 2rem; }
         }
     </style>
 </head>
 <body>
 
+    <!-- Header Navigation -->
     <header>
-        <div class="brand">
-            <span class="status-dot blink"></span>mnnpv // ប្រព័ន្ធ
+        <div class="container">
+            <div class="brand-logo">POS Research Dissertation</div>
+            <nav>
+                <ul>
+                    <li><a href="#" onclick="navigate('home')" class="nav-link active" id="nav-home">Home</a></li>
+                    <li><a href="#" onclick="navigate('brand')" class="nav-link" id="nav-brand">Brand Guide</a></li>
+                    <li><a href="#" onclick="navigate('schedule')" class="nav-link" id="nav-schedule">Schedule (6 Mo)</a></li>
+                    <li><a href="#" onclick="navigate('research')" class="nav-link" id="nav-research">Research</a></li>
+                </ul>
+            </nav>
         </div>
-        <div class="fui-tag">ការតភ្ជាប់ដែលមានសុវត្ថិភាព</div>
     </header>
 
-    <div class="layout-container">
-        <!-- NAVIGATION -->
-        <nav>
-            <button class="fui-btn active" onclick="switchTab('home', this)">០១ // ទិដ្ឋភាពទូទៅ</button>
-            <button class="fui-btn" onclick="switchTab('proposal', this)">០២ // សំណើគម្រោង</button>
-            <button class="fui-btn" onclick="switchTab('schedule', this)">០៣ // កាលវិភាគ Agile</button>
-            <button class="fui-btn" onclick="switchTab('team', this)">០៤ // ក្រុមស្រាវជ្រាវ</button>
-            <button class="fui-btn" onclick="switchTab('brand', this)">០៥ // អត្តសញ្ញាណ</button>
-        </nav>
+    <!-- Main Content Area -->
+    <main>
+        <!-- SECTION: HOME -->
+        <section id="home" class="page-section active">
+            <div class="hero">
+                <h1>POS System Dissertation</h1>
+                <p>An academic exploration into modern Point of Sale systems, integrating mobile and web application architectures. This project aims to standardize the user experience across devices without cognitive load.</p>
+                <div style="margin-top: 1.5rem;">
+                    <button style="padding: 10px 20px; background: var(--color-accent); color: white; border: none; border-radius: 6px; font-weight: 600; cursor: pointer;">Download Abstract</button>
+                    <button style="padding: 10px 20px; background: transparent; color: var(--color-text-primary); border: 1px solid var(--color-border); border-radius: 6px; font-weight: 600; margin-left: 10px; cursor: pointer;">View Repo</button>
+                </div>
+            </div>
 
-        <!-- MAIN VIEWPORT -->
-        <main>
-            
-            <!-- SECTION 1: HOME DASHBOARD -->
-            <section id="home" class="active-section">
-                <h1>ផ្ទាំងគ្រប់គ្រងបេសកកម្ម</h1>
-                <p style="margin-bottom: 25px; color: var(--text-muted);">
-                    កាលបរិច្ឆេទបច្ចុប្បន្ន៖ ២០២៥-១២-១៥ | អ្នកប្រើប្រាស់៖ EIRSVi
-                </p>
+            <div class="card-grid">
+                <div class="card">
+                    <h3>Problem Statement</h3>
+                    <p style="font-size: 0.9rem;">Current POS solutions often suffer from bloated interfaces and lack of true cross-platform responsiveness.</p>
+                </div>
+                <div class="card">
+                    <h3>Objectives</h3>
+                    <p style="font-size: 0.9rem;">Develop a "No-Think" standard interface that adapts seamlessly to any device size without gradient clutter.</p>
+                </div>
+                <div class="card">
+                    <h3>Methodology</h3>
+                    <p style="font-size: 0.9rem;">Mixed-methods research utilizing A/B testing on UI prototypes and qualitative surveys on usability.</p>
+                </div>
+            </div>
+        </section>
 
-                <div class="grid-3">
-                    <div class="fui-box">
-                        <h3>ស្ថានភាពប្រព័ន្ធ</h3>
-                        <p><span class="status-dot"></span>ដំណាក់កាលស្រាវជ្រាវ៖ សកម្ម</p>
-                        <p><span class="status-dot"></span>ឃ្លាំងកូដ៖ GITHUB</p>
-                        <p><span class="status-dot"></span>ជំនាន់៖ ស្ថេរភាព (Stable)</p>
+        <!-- SECTION: BRAND GUIDE -->
+        <section id="brand" class="page-section">
+            <h1>Brand Guidelines</h1>
+            <p>Strict adherence to flat, functional design. No icons. No gradients. Focus on typography and whitespace.</p>
+
+            <h2>Primary Palette</h2>
+            <div class="color-palette">
+                <div class="color-swatch" style="background-color: #0969da; color: white;"><span class="swatch-text">#0969da</span></div>
+                <div class="color-swatch" style="background-color: #24292f; color: white;"><span class="swatch-text">#24292f</span></div>
+                <div class="color-swatch" style="background-color: #ffffff; border: 1px solid #ccc;"><span class="swatch-text">#ffffff</span></div>
+                <div class="color-swatch" style="background-color: #f6f8fa; border: 1px solid #ccc;"><span class="swatch-text">#f6f8fa</span></div>
+            </div>
+
+            <h2>Semantic Colors</h2>
+            <div class="color-palette">
+                <div class="color-swatch" style="background-color: #1a7f37; color: white;"><span class="swatch-text">Success</span></div>
+                <div class="color-swatch" style="background-color: #cf222e; color: white;"><span class="swatch-text">Danger</span></div>
+                <div class="color-swatch" style="background-color: #9a6700; color: white;"><span class="swatch-text">Attention</span></div>
+            </div>
+
+            <h2>Typography</h2>
+            <div class="card" style="margin-top: 1rem;">
+                <h1 style="margin:0;">Header 1 - 2.5rem</h1>
+                <h2 style="margin:0;">Header 2 - 1.75rem</h2>
+                <h3 style="margin:0;">Header 3 - 1.25rem</h3>
+                <p style="margin:1rem 0 0 0;">Body Text - System UI Font. Clean, readable, optimized for speed.</p>
+            </div>
+        </section>
+
+        <!-- SECTION: SCHEDULE (JIRA STYLE) -->
+        <section id="schedule" class="page-section">
+            <h1>6-Month Project Schedule</h1>
+            <p>Tracking research, development, and writing phases using Kanban methodology.</p>
+
+            <div class="jira-board">
+                <!-- Month 1-2: Research -->
+                <div class="jira-column">
+                    <div class="jira-header">Month 1-2: Research <span>3</span></div>
+                    <div class="jira-card">
+                        Literature Review on POS
+                        <br><span class="tag tag-research">Research</span>
                     </div>
-                    <div class="fui-box">
-                        <h3>គោលដៅបន្ទាប់</h3>
-                        <p style="color: var(--accent-blue); font-size: 1.4rem;">គំរូដើម V1 (Prototype)</p>
-                        <p style="color: var(--text-muted);">កាលកំណត់ក្នុងរយៈពេល ១៤ ថ្ងៃ</p>
-                        <div style="background: var(--border); height: 6px; width: 100%; margin-top: 15px; border-radius: 3px;">
-                            <div style="background: var(--accent-blue); height: 100%; width: 65%; border-radius: 3px;"></div>
-                        </div>
+                    <div class="jira-card">
+                        Define System Requirements
+                        <br><span class="tag tag-research">Research</span>
                     </div>
-                    <div class="fui-box">
-                        <h3>ការជូនដំណឹង</h3>
-                        <p>> ការបញ្ចូលកូដថ្មីពី @lead_dev</p>
-                        <p>> បានធ្វើបច្ចុប្បន្នភាពឯកសារយោង</p>
-                        <p>> ការប្រជុំគ្រោងទុក៖ ម៉ោង ១៤:០០</p>
+                    <div class="jira-card">
+                        Competitor Analysis
+                        <br><span class="tag tag-research">Planning</span>
                     </div>
                 </div>
 
-                <div class="fui-box">
-                    <h3>សេចក្តីសង្ខេប</h3>
-                    <p>
-                        គម្រោងស្រាវជ្រាវ mnnpv នេះមានគោលបំណងរចនា និងអនុវត្តប្រព័ន្ធលក់ (POS) ទំនើប ដែលដំណើរការលើ Cloud សម្រាប់សហគ្រាសលក់រាយខ្នាតតូច និងមធ្យម។
-                        សារណាស្រាវជ្រាវនេះផ្តោតលើការកែលម្អល្បឿនប្រតិបត្តិការ ការធ្វើសមកាលកម្មទិន្នន័យ (Synchronization) និងបទពិសោធន៍អ្នកប្រើប្រាស់ (UX) នៅក្នុងស្ថាបត្យកម្មដែលបែកចែក (Distributed Architecture)។
-                    </p>
-                </div>
-            </section>
-
-            <!-- SECTION 2: PROPOSAL -->
-            <section id="proposal">
-                <h1>សំណើគម្រោងស្រាវជ្រាវ</h1>
-                
-                <div class="fui-box" style="margin-bottom: 25px;">
-                    <h3 style="color: var(--accent-red);">០១. បញ្ហាប្រឈម</h3>
-                    <p>
-                        ប្រព័ន្ធ POS បែបបុរាណជួបប្រទះបញ្ហាក្នុងការអាប់ដេតយឺតយ៉ាវ និងខ្វះខាតការវិភាគទិន្នន័យតាមពេលវេលាជាក់ស្តែង។ ដំណោះស្រាយបច្ចុប្បន្នមិនទាន់អាចឆ្លើយតបទៅនឹងតម្រូវការអាជីវកម្មលក់រាយដែលមានទាំងការលក់អនឡាញ និងនៅហាងផ្ទាល់ (Hybrid) បានយ៉ាងមានប្រសិទ្ធភាពនោះទេ។
-                    </p>
-                </div>
-
-                <div class="grid-2">
-                    <div class="fui-box">
-                        <h3 style="color: var(--accent-green);">០២. គោលបំណង</h3>
-                        <ul style="list-style: none; padding-left: 10px;">
-                            <li>> វិភាគបញ្ហានៃប្រព័ន្ធចាស់</li>
-                            <li>> អភិវឌ្ឍស្ថាបត្យកម្ម API-First</li>
-                            <li>> អនុវត្តការធ្វើសមកាលកម្មទិន្នន័យរហ័ស</li>
-                            <li>> ធ្វើតេស្តជាមួយអ្នកប្រើប្រាស់ជាក់ស្តែង</li>
-                        </ul>
+                <!-- Month 3-4: Development -->
+                <div class="jira-column">
+                    <div class="jira-header">Month 3-4: Development <span>2</span></div>
+                    <div class="jira-card">
+                        Mobile App Prototype (React Native)
+                        <br><span class="tag tag-dev">Code</span>
                     </div>
-                    <div class="fui-box">
-                        <h3 style="color: var(--accent-orange);">០៣. វិសាលភាព</h3>
-                        <ul style="list-style: none; padding-left: 10px;">
-                            <li>> ការគ្រប់គ្រងស្តុកទំនិញ</li>
-                            <li>> ដំណើរការការទូទាត់ប្រាក់</li>
-                            <li>> ការគ្រប់គ្រងអតិថិជន (CRM Lite)</li>
-                            <li>> របាយការណ៍លក់</li>
-                        </ul>
+                    <div class="jira-card">
+                        Web Dashboard Implementation
+                        <br><span class="tag tag-dev">Code</span>
                     </div>
                 </div>
 
-                <div class="fui-box">
-                    <h3>០៤. វិធីសាស្ត្រស្រាវជ្រាវ</h3>
-                    <p>
-                        គម្រោងនេះអនុវត្តតាមវិធីសាស្ត្រ Design Science Research Methodology (DSRM)។ ការអភិវឌ្ឍនឹងធ្វើឡើងជាដំណាក់កាលៗ ដើម្បីបង្កើតជាសមិទ្ធផល (កូដ, គំនូសបំព្រួញ, គំរូ) ដែលនឹងត្រូវវាយតម្លៃដោយផ្អែកលើរង្វាស់សមត្ថភាពដែលបានកំណត់ (ដូចជាល្បឿន និងភាពងាយស្រួលក្នុងការប្រើប្រាស់)។
-                    </p>
-                </div>
-            </section>
-
-            <!-- SECTION 3: AGILE SCHEDULE -->
-            <section id="schedule">
-                <h1>កាលវិភាគ AGILE (៦ ខែ)</h1>
-                <p style="margin-bottom: 25px;">វិធីសាស្ត្រ៖ Hybrid Agile/Waterfall សម្រាប់ការអនុលោមតាមសារណា</p>
-
-                <div class="grid-3">
-                    <!-- MONTH 1-2 -->
-                    <div class="fui-box">
-                        <h3>ដំណាក់កាលទី ១៖ ការចាប់ផ្តើម</h3>
-                        <div class="timeline-item">
-                            <div class="timeline-header">ខែទី ១៖ ការស្រាវជ្រាវ</div>
-                            <p>ការពិនិត្យឯកសារយោង, ប្រមូលតម្រូវការ, ជ្រើសរើសបច្ចេកវិទ្យា។</p>
-                            <span class="fui-tag">រួចរាល់</span>
-                        </div>
-                        <div class="timeline-item">
-                            <div class="timeline-header">ខែទី ២៖ ការរចនា</div>
-                            <p>រចនា Database Schema, គូរ Wireframe UI/UX, សរសេរឯកសារស្ថាបត្យកម្ម។</p>
-                            <span class="fui-tag">កំពុងដំណើរការ</span>
-                        </div>
+                <!-- Month 5-6: Thesis & Testing -->
+                <div class="jira-column">
+                    <div class="jira-header">Month 5-6: Finalize <span>2</span></div>
+                    <div class="jira-card">
+                        Usability Testing & Data Analysis
+                        <br><span class="tag tag-research">Testing</span>
                     </div>
-
-                    <!-- MONTH 3-4 -->
-                    <div class="fui-box">
-                        <h3>ដំណាក់កាលទី ២៖ ការអភិវឌ្ឍ</h3>
-                        <div class="timeline-item">
-                            <div class="timeline-header">ខែទី ៣៖ SPRINT 1-2</div>
-                            <p>បង្កើត Core API (ប្រព័ន្ធសុវត្ថិភាព, ស្តុក), ដំឡើង Database។</p>
-                            <span class="fui-tag">រង់ចាំ</span>
-                        </div>
-                        <div class="timeline-item">
-                            <div class="timeline-header">ខែទី ៤៖ SPRINT 3-4</div>
-                            <p>បង្កើត Frontend POS Interface, ភ្ជាប់ប្រព័ន្ធទូទាត់សាកល្បង។</p>
-                            <span class="fui-tag">រង់ចាំ</span>
-                        </div>
-                    </div>
-
-                    <!-- MONTH 5-6 -->
-                    <div class="fui-box">
-                        <h3>ដំណាក់កាលទី ៣៖ ការបញ្ចប់</h3>
-                        <div class="timeline-item">
-                            <div class="timeline-header">ខែទី ៥៖ ការធ្វើតេស្ត</div>
-                            <p>តេស្តមុខងារ (Unit Testing), តេស្តទទួលយកដោយអ្នកប្រើប្រាស់ (UAT)។</p>
-                            <span class="fui-tag">រង់ចាំ</span>
-                        </div>
-                        <div class="timeline-item">
-                            <div class="timeline-header">ខែទី ៦៖ ការការពារសារណា</div>
-                            <p>សរសេរសារណាបញ្ចប់, កែសម្រួលកូដចុងក្រោយ, ត្រៀមបទបង្ហាញ។</p>
-                            <span class="fui-tag">រង់ចាំ</span>
-                        </div>
+                    <div class="jira-card">
+                        Final Thesis Compilation
+                        <br><span class="tag tag-write">Thesis</span>
                     </div>
                 </div>
-            </section>
+            </div>
+        </section>
 
-            <!-- SECTION 4: TEAM -->
-            <section id="team">
-                <h1>សមាជិកក្រុមស្រាវជ្រាវ</h1>
-                <div class="team-grid">
-                    <!-- Member 1 -->
-                    <div class="fui-box">
-                        <div style="display: flex; align-items: center; margin-bottom: 20px;">
-                            <div style="width: 60px; height: 60px; background: var(--border); display: flex; align-items: center; justify-content: center; margin-right: 15px; border-radius: 5px;">P1</div>
-                            <div>
-                                <h3 style="margin: 0; font-size: 1.1rem;">សុខ វិបុល</h3>
-                                <span class="role-label">ប្រធានស្រាវជ្រាវ (Principal Investigator)</span>
-                            </div>
-                        </div>
-                        <p style="font-size: 0.95rem;">អ្នកទទួលខុសត្រូវលើស្ថាបត្យកម្មប្រព័ន្ធ និងការសរសេរសារណា។ ផ្តោតសំខាន់លើ Backend Scalability។</p>
-                        <div style="margin-top: 15px;">
-                            <span class="fui-tag">FULL STACK</span>
-                            <span class="fui-tag">LEAD</span>
-                        </div>
-                    </div>
+        <!-- SECTION: RESEARCH -->
+        <section id="research" class="page-section">
+            <h1>Research Standard</h1>
+            <p>Dissertation structure and formal requirements.</p>
 
-                    <!-- Member 2 -->
-                    <div class="fui-box">
-                        <div style="display: flex; align-items: center; margin-bottom: 20px;">
-                            <div style="width: 60px; height: 60px; background: var(--border); display: flex; align-items: center; justify-content: center; margin-right: 15px; border-radius: 5px;">P2</div>
-                            <div>
-                                <h3 style="margin: 0; font-size: 1.1rem;">ចាន់ ធារី</h3>
-                                <span class="role-label">អ្នកវិភាគទិន្នន័យ / QA</span>
-                            </div>
-                        </div>
-                        <p style="font-size: 0.95rem;">ទទួលខុសត្រូវលើសុចរិតភាពទិន្នន័យ (Database Integrity), របាយការណ៍ និងការធ្វើតេស្ត។</p>
-                        <div style="margin-top: 15px;">
-                            <span class="fui-tag">SQL</span>
-                            <span class="fui-tag">TESTING</span>
-                        </div>
-                    </div>
+            <div style="border-left: 4px solid var(--color-accent); padding-left: 1.5rem; margin-top: 2rem;">
+                <h3>Chapter 1: Introduction</h3>
+                <p>Background of Study, Statement of Problem, Significance of the POS System Innovation.</p>
+            </div>
 
-                    <!-- Member 3 -->
-                    <div class="fui-box">
-                        <div style="display: flex; align-items: center; margin-bottom: 20px;">
-                            <div style="width: 60px; height: 60px; background: var(--border); display: flex; align-items: center; justify-content: center; margin-right: 15px; border-radius: 5px;">P3</div>
-                            <div>
-                                <h3 style="margin: 0; font-size: 1.1rem;">លី សម្បត្តិ</h3>
-                                <span class="role-label">អ្នកអភិវឌ្ឍ Frontend</span>
-                            </div>
-                        </div>
-                        <p style="font-size: 0.95rem;">ផ្តោតលើភាពងាយស្រួលនៃប្រព័ន្ធ POS, ការប្រើប្រាស់ React និងការរចនា Responsive។</p>
-                        <div style="margin-top: 15px;">
-                            <span class="fui-tag">REACT</span>
-                            <span class="fui-tag">UX/UI</span>
-                        </div>
-                    </div>
-                </div>
-            </section>
+            <div style="border-left: 4px solid var(--color-border); padding-left: 1.5rem; margin-top: 2rem;">
+                <h3>Chapter 2: Literature Review</h3>
+                <p>Analysis of existing cloud-based POS architectures and gap analysis in UX/UI for enterprise applications.</p>
+            </div>
 
-            <!-- SECTION 5: BRAND -->
-            <section id="brand">
-                <h1>អត្តសញ្ញាណម៉ាក (Brand Identity)</h1>
-                
-                <div class="grid-3">
-                    <div class="fui-box">
-                        <h3>ក្ដារពណ៌ (Color Palette)</h3>
-                        <p>ផ្អែកលើ GitHub Dark Mode</p>
-                        <div style="display: flex; gap: 10px; margin-top: 15px;">
-                            <div style="width: 40px; height: 40px; background: #0d1117; border: 1px solid var(--border);"></div>
-                            <div style="width: 40px; height: 40px; background: #161b22; border: 1px solid var(--border);"></div>
-                            <div style="width: 40px; height: 40px; background: #58a6ff; border: 1px solid var(--border);"></div>
-                            <div style="width: 40px; height: 40px; background: #238636; border: 1px solid var(--border);"></div>
-                            <div style="width: 40px; height: 40px; background: #da3633; border: 1px solid var(--border);"></div>
-                        </div>
-                        <p style="margin-top: 15px; font-size: 0.85rem;">មិនប្រើពណ៌ Gradient។ ការរចនាបែប Flat UI។</p>
-                    </div>
+            <div style="border-left: 4px solid var(--color-border); padding-left: 1.5rem; margin-top: 2rem;">
+                <h3>Chapter 3: System Design</h3>
+                <p>UML Diagrams, Database Schema, and API specifications for the Mobile and Web integration.</p>
+            </div>
+        </section>
+    </main>
 
-                    <div class="fui-box">
-                        <h3>ពុម្ពអក្សរ (Typography)</h3>
-                        <p style="font-family: 'Battambang', cursive; font-size: 1.4rem;">កខគឃង... ABC</p>
-                        <p style="color: var(--text-muted);">Font Family: Battambang (Khmer)</p>
-                        <p style="color: var(--text-muted);">Font Family: Fira Code (English/Code)</p>
-                    </div>
-
-                    <div class="fui-box">
-                        <h3>រាងធរណីមាត្រ (Shape)</h3>
-                        <div style="width: 120px; height: 60px; background: var(--border); clip-path: polygon(15px 0, 100% 0, 100% calc(100% - 15px), calc(100% - 15px) 100%, 0 100%, 0 15px); margin-top: 10px;"></div>
-                        <p style="margin-top: 15px;">ការកាត់ជ្រុង (Clip-Path)</p>
-                        <p style="color: var(--text-muted);">បែបបច្ចេកវិទ្យាអនាគត (Futuristic)</p>
-                    </div>
-                </div>
-
-                <div class="fui-box" style="margin-top: 25px;">
-                    <h3>ទស្សនវិជ្ជាការរចនា (Design Philosophy)</h3>
-                    <p>
-                        ចំណុចប្រទាក់នេះផ្តល់អាទិភាពដល់ដង់ស៊ីតេទិន្នន័យ និងភាពងាយស្រួលក្នុងការអាន ដែលសាកសមសម្រាប់បរិស្ថានស្រាវជ្រាវ។ វាមិនប្រើប្រាស់ការតុបតែងដែលរំខាន (ដូចជា Emoji, ស្រមោល, ឬ Gradient) នោះទេ ប៉ុន្តែផ្តោតលើសោភ័ណភាពបែប "Head-Up Display" (HUD)។
-                    </p>
-                </div>
-            </section>
-
-        </main>
-    </div>
-
+    <!-- Simple JS for SPA Routing (No Refresh) -->
     <script>
-        // SPA Navigation Logic
-        function switchTab(sectionId, btnElement) {
+        function navigate(sectionId) {
             // 1. Hide all sections
-            const sections = document.querySelectorAll('section');
-            sections.forEach(sec => {
-                sec.classList.remove('active-section');
+            const sections = document.querySelectorAll('.page-section');
+            sections.forEach(section => {
+                section.classList.remove('active');
             });
 
-            // 2. Deactivate all buttons
-            const buttons = document.querySelectorAll('nav .fui-btn');
-            buttons.forEach(btn => {
-                btn.classList.remove('active');
-            });
-
-            // 3. Show target section
-            document.getElementById(sectionId).classList.add('active-section');
-
-            // 4. Activate clicked button
-            if(btnElement) {
-                btnElement.classList.add('active');
+            // 2. Show target section
+            const target = document.getElementById(sectionId);
+            if (target) {
+                target.classList.add('active');
             }
+
+            // 3. Update Nav State
+            const navLinks = document.querySelectorAll('.nav-link');
+            navLinks.forEach(link => {
+                link.classList.remove('active');
+            });
+            const activeNav = document.getElementById('nav-' + sectionId);
+            if (activeNav) {
+                activeNav.classList.add('active');
+            }
+
+            // 4. Update URL without refresh (optional, good for history)
+            // history.pushState(null, '', '#' + sectionId);
         }
+
+        // Handle browser back button
+        window.addEventListener('popstate', function() {
+            const hash = window.location.hash.substring(1) || 'home';
+            navigate(hash);
+        });
+
+        // Initial Load
+        const initialHash = window.location.hash.substring(1) || 'home';
+        navigate(initialHash);
     </script>
 </body>
 </html>

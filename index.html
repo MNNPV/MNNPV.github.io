@@ -1,669 +1,575 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="km">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NexPOS Research Terminal</title>
-    <!-- Google Fonts: JetBrains Mono for code/headers, Inter for body -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
-    
+    <title>mnnpv // ប្រព័ន្ធស្រាវជ្រាវ</title>
+    <!-- Import Google Font for Khmer -->
+    <link href="https://fonts.googleapis.com/css2?family=Battambang:wght@400;700&family=Fira+Code:wght@400;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            /* GitHub Dark Mode Colors */
+            /* GitHub Dark Mode Palette */
             --bg-canvas: #0d1117;
             --bg-panel: #161b22;
             --bg-subtle: #21262d;
-            --border-default: #30363d;
-            --fg-default: #c9d1d9;
-            --fg-muted: #8b949e;
+            --border: #30363d;
+            --text-main: #c9d1d9;
+            --text-muted: #8b949e;
             --accent-blue: #58a6ff;
             --accent-green: #238636;
-            --accent-orange: #d29922;
             --accent-red: #da3633;
+            --accent-orange: #d29922;
             
-            /* Design Variables */
-            --corner-size: 15px;
-            --header-height: 70px;
+            /* FUI Settings */
+            --corner-clip: 15px;
+            --gap: 20px;
         }
 
         * {
+            box-sizing: border-box;
             margin: 0;
             padding: 0;
-            box-sizing: border-box;
         }
 
         body {
+            font-family: 'Battambang', 'Fira Code', monospace; /* Khmer font + Monospace */
             background-color: var(--bg-canvas);
-            color: var(--fg-default);
-            font-family: 'Inter', sans-serif;
+            color: var(--text-main);
             line-height: 1.6;
-            overflow-x: hidden;
+            height: 100vh;
+            overflow: hidden;
             display: flex;
             flex-direction: column;
-            min-height: 100vh;
         }
 
-        h1, h2, h3, h4, .mono-font {
-            font-family: 'JetBrains Mono', monospace;
-        }
-
-        /* --- FUI SHAPE UTILITIES --- */
+        /* --- FUI UTILITIES --- */
         .fui-box {
             background-color: var(--bg-panel);
-            border: 1px solid var(--border-default);
-            padding: 24px;
-            position: relative;
-            /* Angled corners clip-path */
+            border: 1px solid var(--border);
+            /* Angled corners: Top-Left, Top-Right, Bottom-Right cut, Bottom-Left */
             clip-path: polygon(
-                var(--corner-size) 0, 
+                var(--corner-clip) 0, 
                 100% 0, 
-                100% calc(100% - var(--corner-size)), 
-                calc(100% - var(--corner-size)) 100%, 
+                100% calc(100% - var(--corner-clip)), 
+                calc(100% - var(--corner-clip)) 100%, 
                 0 100%, 
-                0 var(--corner-size)
+                0 var(--corner-clip)
             );
-        }
-
-        /* Pseudo-element to create a border effect for the clip-path */
-        .fui-box::before {
-            content: '';
-            position: absolute;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: var(--border-default);
-            z-index: -1;
-            clip-path: polygon(
-                var(--corner-size) 0, 
-                100% 0, 
-                100% calc(100% - var(--corner-size)), 
-                calc(100% - var(--corner-size)) 100%, 
-                0 100%, 
-                0 var(--corner-size),
-                
-                /* Inner cutout */
-                2px calc(var(--corner-size) + 1px),
-                2px calc(100% - 2px),
-                calc(100% - var(--corner-size) - 1px) calc(100% - 2px),
-                calc(100% - 2px) calc(100% - var(--corner-size) - 1px),
-                calc(100% - 2px) 2px,
-                calc(var(--corner-size) + 1px) 2px
-            );
-        }
-
-        .deco-line {
-            height: 2px;
-            background: var(--border-default);
-            margin: 20px 0;
+            padding: 25px;
             position: relative;
-        }
-        .deco-line::after {
-            content: '';
-            position: absolute;
-            right: 0;
-            top: -2px;
-            width: 20px;
-            height: 6px;
-            background: var(--accent-blue);
-        }
-
-        /* --- NAVIGATION --- */
-        header {
-            height: var(--header-height);
-            border-bottom: 1px solid var(--border-default);
-            background: rgba(13, 17, 23, 0.95);
-            backdrop-filter: blur(10px);
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-        }
-
-        .nav-container {
-            max-width: 1400px;
-            margin: 0 auto;
             height: 100%;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 0 20px;
         }
 
-        .brand {
-            font-family: 'JetBrains Mono', monospace;
-            font-weight: 700;
-            font-size: 1.2rem;
-            color: var(--accent-blue);
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
+        .fui-box::before {
+            /* Decorative line for FUI style */
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 30px;
+            height: 30px;
+            border-top: 2px solid var(--accent-blue);
+            border-left: 2px solid var(--accent-blue);
         }
 
-        .brand span {
-            color: var(--fg-default);
-        }
-
-        .nav-items {
-            display: flex;
-            gap: 5px;
-        }
-
-        .nav-btn {
-            background: transparent;
-            border: 1px solid transparent;
-            color: var(--fg-muted);
-            padding: 8px 16px;
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.85rem;
-            cursor: pointer;
-            transition: all 0.2s;
-            text-transform: uppercase;
-        }
-
-        .nav-btn:hover {
-            color: var(--accent-blue);
+        .fui-btn {
             background: var(--bg-subtle);
+            color: var(--text-main);
+            border: 1px solid var(--border);
+            padding: 12px 20px;
+            cursor: pointer;
+            text-transform: uppercase;
+            font-weight: bold;
+            font-family: 'Battambang', sans-serif;
+            clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px);
+            transition: all 0.2s ease;
+            text-align: left;
+            font-size: 0.95rem;
         }
 
-        .nav-btn.active {
-            color: var(--bg-canvas);
+        .fui-btn:hover, .fui-btn.active {
             background: var(--accent-blue);
-            clip-path: polygon(10px 0, 100% 0, 100% 100%, 0 100%, 0 10px);
+            color: var(--bg-canvas);
+            border-color: var(--accent-blue);
+        }
+
+        .fui-tag {
+            font-size: 0.75rem;
+            padding: 3px 10px;
+            border: 1px solid var(--accent-blue);
+            color: var(--accent-blue);
+            display: inline-block;
+            margin-top: 5px;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            background-color: var(--accent-green);
+            display: inline-block;
+            margin-right: 8px;
+            border-radius: 50%;
+        }
+
+        .blink {
+            animation: blinker 2s linear infinite;
+        }
+
+        @keyframes blinker {
+            50% { opacity: 0; }
         }
 
         /* --- LAYOUT --- */
-        main {
-            flex: 1;
-            padding: 40px 20px;
-            max-width: 1400px;
-            margin: 0 auto;
-            width: 100%;
+        header {
+            padding: 15px 25px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--bg-canvas);
+            z-index: 10;
         }
 
-        .page-section {
+        .brand {
+            font-size: 1.4rem;
+            letter-spacing: 1px;
+            color: var(--accent-blue);
+            font-weight: bold;
+            font-family: 'Fira Code', monospace;
+        }
+
+        .layout-container {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+        }
+
+        /* --- SIDEBAR NAV --- */
+        nav {
+            width: 280px;
+            background: var(--bg-canvas);
+            border-right: 1px solid var(--border);
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        /* --- MAIN CONTENT --- */
+        main {
+            flex: 1;
+            overflow-y: auto;
+            padding: 30px;
+            position: relative;
+        }
+
+        /* Background Grid Line Effect */
+        main::after {
+            content: "";
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-image: 
+                linear-gradient(rgba(48, 54, 61, 0.1) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(48, 54, 61, 0.1) 1px, transparent 1px);
+            background-size: 20px 20px;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        /* --- SECTIONS (SPA LOGIC) --- */
+        section {
             display: none;
             animation: fadeIn 0.4s ease-in-out;
         }
 
-        .page-section.active {
+        section.active-section {
             display: block;
         }
 
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
+            from { opacity: 0; transform: translateY(15px); }
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* --- DASHBOARD GRID --- */
-        .dashboard-grid {
+        h1 { 
+            border-bottom: 2px solid var(--border); 
+            padding-bottom: 15px; 
+            color: var(--accent-blue);
+            margin-bottom: 25px;
+            font-size: 1.8rem;
+        }
+
+        h2, h3 {
+            margin-bottom: 15px;
+            color: var(--text-main);
+        }
+
+        p {
+            margin-bottom: 15px;
+            color: var(--text-muted);
+        }
+
+        /* --- SPECIFIC MODULES --- */
+        
+        .grid-3 {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 20px;
+            gap: 25px;
             margin-bottom: 30px;
         }
 
-        .stat-value {
-            font-size: 2.5rem;
-            font-weight: 700;
-            font-family: 'JetBrains Mono';
-            color: var(--fg-default);
-        }
-
-        .stat-label {
-            color: var(--fg-muted);
-            font-size: 0.9rem;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        /* --- PROJECT TABLE --- */
-        .data-table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 0.9rem;
-        }
-
-        .data-table th {
-            text-align: left;
-            padding: 12px;
-            border-bottom: 2px solid var(--border-default);
-            color: var(--fg-muted);
-            font-family: 'JetBrains Mono';
-            text-transform: uppercase;
-            font-size: 0.8rem;
-        }
-
-        .data-table td {
-            padding: 12px;
-            border-bottom: 1px solid var(--border-default);
-        }
-
-        .status-badge {
-            padding: 4px 8px;
-            font-size: 0.75rem;
-            font-family: 'JetBrains Mono';
-            text-transform: uppercase;
-            background: var(--bg-subtle);
-            border: 1px solid var(--border-default);
-        }
-        
-        .status-badge.active { border-color: var(--accent-green); color: var(--accent-green); }
-        .status-badge.pending { border-color: var(--accent-orange); color: var(--accent-orange); }
-
-        /* --- TEAM SECTION --- */
-        .team-container {
+        .grid-2 {
             display: grid;
-            grid-template-columns: 250px 1fr;
-            gap: 30px;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
         }
 
-        .team-card {
-            margin-bottom: 15px;
-            border-left: 2px solid var(--accent-blue);
-            padding-left: 15px;
-        }
-        
-        .onboarding-steps {
-            list-style: none;
-            counter-reset: step-counter;
-        }
-        
-        .onboarding-steps li {
+        /* Timeline */
+        .timeline-item {
+            border-left: 2px solid var(--border);
+            margin-left: 10px;
+            padding-left: 25px;
+            padding-bottom: 35px;
             position: relative;
-            padding-left: 40px;
-            margin-bottom: 20px;
         }
-        
-        .onboarding-steps li::before {
-            counter-increment: step-counter;
-            content: "0" counter(step-counter);
+
+        .timeline-item:last-child {
+            padding-bottom: 0;
+            border-left: 2px solid transparent;
+        }
+
+        .timeline-item::before {
+            content: '';
+            width: 12px;
+            height: 12px;
+            background: var(--bg-canvas);
+            border: 2px solid var(--accent-blue);
             position: absolute;
-            left: 0;
-            top: 0;
-            font-family: 'JetBrains Mono';
-            color: var(--accent-blue);
-            font-weight: bold;
+            left: -7px;
+            top: 5px;
         }
 
-        /* --- AGILE BOARD --- */
-        .six-month-grid {
+        .timeline-header {
+            color: var(--accent-blue);
+            font-weight: bold;
+            font-size: 1.1rem;
+            margin-bottom: 8px;
+        }
+
+        /* Team Cards */
+        .team-grid {
             display: grid;
-            grid-template-columns: repeat(6, 1fr);
-            gap: 10px;
-            margin-bottom: 30px;
-            overflow-x: auto;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 25px;
         }
 
-        .month-col {
-            min-width: 180px;
-        }
-
-        .month-header {
-            background: var(--bg-subtle);
-            padding: 10px;
-            text-align: center;
-            font-family: 'JetBrains Mono';
-            font-weight: bold;
-            border: 1px solid var(--border-default);
+        .role-label {
+            color: var(--text-muted);
+            font-size: 0.9rem;
             margin-bottom: 10px;
-            color: var(--accent-blue);
+            display: block;
         }
-
-        .task-item {
-            background: var(--bg-panel);
-            border: 1px solid var(--border-default);
-            padding: 12px;
-            margin-bottom: 10px;
-            font-size: 0.85rem;
-            border-left: 3px solid var(--border-default);
-        }
-
-        .task-item.dev { border-left-color: var(--accent-blue); }
-        .task-item.research { border-left-color: var(--accent-orange); }
-        .task-item.write { border-left-color: var(--accent-green); }
 
         /* --- RESPONSIVE --- */
-        @media (max-width: 768px) {
-            .nav-container {
+        @media (max-width: 900px) {
+            .layout-container {
                 flex-direction: column;
-                height: auto;
+            }
+            nav {
+                width: 100%;
+                flex-direction: row;
+                overflow-x: auto;
+                border-right: none;
+                border-bottom: 1px solid var(--border);
                 padding: 15px;
+                gap: 10px;
             }
-            header {
-                height: auto;
-                position: relative;
+            .fui-btn {
+                white-space: nowrap;
+                font-size: 0.85rem;
+                padding: 10px 15px;
             }
-            .nav-items {
-                flex-wrap: wrap;
-                justify-content: center;
-                margin-top: 10px;
+            main {
+                padding: 20px;
             }
-            .team-container {
-                grid-template-columns: 1fr;
-            }
-            .six-month-grid {
-                grid-template-columns: 1fr; /* Stack months on mobile */
-            }
+            h1 { font-size: 1.4rem; }
         }
     </style>
 </head>
 <body>
 
     <header>
-        <div class="nav-container">
-            <div class="brand">
-                [ NexPOS ] <span>// Research Terminal</span>
-            </div>
-            <nav class="nav-items">
-                <button class="nav-btn active" onclick="switchTab('home')">1. Overview</button>
-                <button class="nav-btn" onclick="switchTab('team')">2. Research Team</button>
-                <button class="nav-btn" onclick="switchTab('agile')">3. Agile Plan</button>
-                <button class="nav-btn" onclick="switchTab('thesis')">4. Thesis Schedule</button>
-                <button class="nav-btn" onclick="switchTab('brand')">5. Identity</button>
-            </nav>
+        <div class="brand">
+            <span class="status-dot blink"></span>mnnpv // ប្រព័ន្ធ
         </div>
+        <div class="fui-tag">ការតភ្ជាប់ដែលមានសុវត្ថិភាព</div>
     </header>
 
-    <main>
-        
-        <!-- === HOME SECTION === -->
-        <section id="home" class="page-section active">
-            <div class="fui-box" style="margin-bottom: 30px;">
-                <span class="mono-font" style="color: var(--accent-blue);">SYS.STATUS: ONLINE</span>
-                <h1 style="font-size: 2.5rem; margin: 10px 0;">Retail POS Architecture Research</h1>
-                <p style="color: var(--fg-muted); max-width: 800px;">
-                    A comprehensive investigation into "Offline-First" cloud architectures for high-latency retail environments. 
-                    Project NexPOS aims to deliver a resilient Point of Sale artifact accompanied by a dissertation on data synchronization methodologies.
-                </p>
-                <div class="deco-line"></div>
-                <div style="display: flex; gap: 20px;">
-                    <button class="nav-btn" style="border: 1px solid var(--accent-blue); color: var(--accent-blue);">View Abstract</button>
-                    <button class="nav-btn" style="border: 1px solid var(--border-default);">System Docs</button>
-                </div>
-            </div>
+    <div class="layout-container">
+        <!-- NAVIGATION -->
+        <nav>
+            <button class="fui-btn active" onclick="switchTab('home', this)">០១ // ទិដ្ឋភាពទូទៅ</button>
+            <button class="fui-btn" onclick="switchTab('proposal', this)">០២ // សំណើគម្រោង</button>
+            <button class="fui-btn" onclick="switchTab('schedule', this)">០៣ // កាលវិភាគ Agile</button>
+            <button class="fui-btn" onclick="switchTab('team', this)">០៤ // ក្រុមស្រាវជ្រាវ</button>
+            <button class="fui-btn" onclick="switchTab('brand', this)">០៥ // អត្តសញ្ញាណ</button>
+        </nav>
 
-            <div class="dashboard-grid">
-                <div class="fui-box">
-                    <div class="stat-value">68%</div>
-                    <div class="stat-label">Phase 2 Completion</div>
-                </div>
-                <div class="fui-box">
-                    <div class="stat-value">142</div>
-                    <div class="stat-label">Citations Collected</div>
-                </div>
-                <div class="fui-box">
-                    <div class="stat-value">v0.4.2</div>
-                    <div class="stat-label">Artifact Version</div>
-                </div>
-            </div>
-
-            <div class="fui-box">
-                <h3>Critical Modules Status</h3>
-                <br>
-                <table class="data-table">
-                    <thead>
-                        <tr>
-                            <th>Module ID</th>
-                            <th>Description</th>
-                            <th>Lead</th>
-                            <th>Status</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td class="mono-font">CORE-01</td>
-                            <td>Local PouchDB Storage Engine</td>
-                            <td>A. Chen</td>
-                            <td><span class="status-badge active">Stable</span></td>
-                        </tr>
-                        <tr>
-                            <td class="mono-font">SYNC-02</td>
-                            <td>Cloud Replication (CouchDB)</td>
-                            <td>M. Ross</td>
-                            <td><span class="status-badge pending">Optimization</span></td>
-                        </tr>
-                        <tr>
-                            <td class="mono-font">UI-05</td>
-                            <td>Touch Interface (React)</td>
-                            <td>S. Patel</td>
-                            <td><span class="status-badge active">Stable</span></td>
-                        </tr>
-                        <tr>
-                            <td class="mono-font">SEC-01</td>
-                            <td>JWT Authentication Layer</td>
-                            <td>J. Smith</td>
-                            <td><span class="status-badge pending">Audit</span></td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </section>
-
-        <!-- === TEAM SECTION === -->
-        <section id="team" class="page-section">
-            <div class="fui-box" style="margin-bottom: 20px;">
-                <h2>Research Unit Structure</h2>
-                <p class="mono-font" style="color: var(--accent-blue);">// PERSONNEL_MANIFEST</p>
-            </div>
-
-            <div class="team-container">
-                <!-- Sidebar: Roster -->
-                <div class="fui-box">
-                    <h4 style="margin-bottom: 20px; color: var(--fg-muted);">Active Personnel</h4>
-                    
-                    <div class="team-card">
-                        <h5>Dr. Sarah Connor</h5>
-                        <small class="mono-font">Principal Investigator</small>
-                    </div>
-                    <div class="team-card">
-                        <h5>James Wright</h5>
-                        <small class="mono-font">System Architect (Lead)</small>
-                    </div>
-                    <div class="team-card">
-                        <h5>Emily Chen</h5>
-                        <small class="mono-font">Data Analyst</small>
-                    </div>
-                    <div class="team-card">
-                        <h5>New Recruit</h5>
-                        <small class="mono-font">Junior Researcher</small>
-                    </div>
-                </div>
-
-                <!-- Main: Onboarding/Beginner Guide -->
-                <div class="fui-box">
-                    <h3>Protocol: Beginner Onboarding</h3>
-                    <p style="margin-bottom: 20px;">Standard Operating Procedure for new research assistants joining the NexPOS project.</p>
-                    <div class="deco-line"></div>
-
-                    <ul class="onboarding-steps">
-                        <li>
-                            <strong>Repository Configuration</strong>
-                            <p>Clone the GitHub repository. Ensure Node.js v18+ is installed. Run <code>npm install</code> to fetch dependencies. Do not commit `.env` files.</p>
-                        </li>
-                        <li>
-                            <strong>Literature Review Methodology</strong>
-                            <p>Access the shared Zotero library. All new citations must be tagged with the relevant architectural pattern (e.g., 'MVC', 'Event-Sourcing').</p>
-                        </li>
-                        <li>
-                            <strong>Code Style Guidelines</strong>
-                            <p>We strictly follow the Airbnb Style Guide for JavaScript. Run linter before pushing any commit. Commit messages must follow Conventional Commits (e.g., <code>feat: add login screen</code>).</p>
-                        </li>
-                        <li>
-                            <strong>Agile Workflow</strong>
-                            <p>Tasks are tracked on the board below. Pick items from the 'Backlog'. Move to 'In Progress' only when actively working.</p>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-        </section>
-
-        <!-- === AGILE 6 MONTH PLAN === -->
-        <section id="agile" class="page-section">
-            <div class="fui-box" style="margin-bottom: 20px;">
-                <h2>6-Month Execution Plan</h2>
-                <div style="display: flex; gap: 15px; margin-top: 10px; font-size: 0.8rem;">
-                    <span style="display: flex; align-items: center; gap: 5px;"><div style="width: 10px; height: 10px; background: var(--accent-blue);"></div> Development</span>
-                    <span style="display: flex; align-items: center; gap: 5px;"><div style="width: 10px; height: 10px; background: var(--accent-orange);"></div> Research</span>
-                    <span style="display: flex; align-items: center; gap: 5px;"><div style="width: 10px; height: 10px; background: var(--accent-green);"></div> Writing</span>
-                </div>
-            </div>
-
-            <div class="six-month-grid">
-                <!-- Month 1 -->
-                <div class="month-col">
-                    <div class="month-header">MONTH 01</div>
-                    <div class="task-item research">Literature Survey Phase 1</div>
-                    <div class="task-item research">Requirement Gathering</div>
-                    <div class="task-item dev">Repo & Environment Setup</div>
-                </div>
-
-                <!-- Month 2 -->
-                <div class="month-col">
-                    <div class="month-header">MONTH 02</div>
-                    <div class="task-item research">Competitor Analysis</div>
-                    <div class="task-item dev">Database Schema Design</div>
-                    <div class="task-item dev">Auth System Prototype</div>
-                </div>
-
-                <!-- Month 3 -->
-                <div class="month-col">
-                    <div class="month-header">MONTH 03</div>
-                    <div class="task-item dev">Core POS Logic Implementation</div>
-                    <div class="task-item dev">Offline Sync Mechanism</div>
-                    <div class="task-item write">Chapter 1: Introduction Draft</div>
-                </div>
-
-                <!-- Month 4 -->
-                <div class="month-col">
-                    <div class="month-header">MONTH 04</div>
-                    <div class="task-item dev">Inventory Module UI</div>
-                    <div class="task-item dev">Reporting Dashboard</div>
-                    <div class="task-item write">Chapter 2: Lit Review Draft</div>
-                </div>
-
-                <!-- Month 5 -->
-                <div class="month-col">
-                    <div class="month-header">MONTH 05</div>
-                    <div class="task-item dev">System Integration Testing</div>
-                    <div class="task-item research">User Acceptance Testing (UAT)</div>
-                    <div class="task-item write">Chapter 3 & 4: Method & Results</div>
-                </div>
-
-                <!-- Month 6 -->
-                <div class="month-col">
-                    <div class="month-header">MONTH 06</div>
-                    <div class="task-item dev">Final Bug Fixes</div>
-                    <div class="task-item write">Final Thesis Compilation</div>
-                    <div class="task-item research">Defense Preparation</div>
-                </div>
-            </div>
-        </section>
-
-        <!-- === THESIS SCHEDULE === -->
-        <section id="thesis" class="page-section">
-            <div class="fui-box">
-                <h2>Dissertation Milestones</h2>
-                <p>Academic submission deadlines and review cycles.</p>
-                <div class="deco-line"></div>
-
-                <div style="display: grid; gap: 20px;">
-                    <div style="display: flex; gap: 20px; align-items: flex-start;">
-                        <div class="mono-font" style="color: var(--accent-blue); min-width: 100px;">PHASE 1</div>
-                        <div>
-                            <h4 style="margin-bottom: 5px;">Proposal Defense</h4>
-                            <p style="color: var(--fg-muted); font-size: 0.9rem;">Presentation of research gap, objectives, and proposed methodology to the faculty board.</p>
-                        </div>
-                    </div>
-
-                    <div style="display: flex; gap: 20px; align-items: flex-start;">
-                        <div class="mono-font" style="color: var(--accent-blue); min-width: 100px;">PHASE 2</div>
-                        <div>
-                            <h4 style="margin-bottom: 5px;">Progress Review 1 (Chapter 1-3)</h4>
-                            <p style="color: var(--fg-muted); font-size: 0.9rem;">Submission of Introduction, Literature Review, and Methodology. Proof of initial prototype functionality.</p>
-                        </div>
-                    </div>
-
-                    <div style="display: flex; gap: 20px; align-items: flex-start;">
-                        <div class="mono-font" style="color: var(--accent-blue); min-width: 100px;">PHASE 3</div>
-                        <div>
-                            <h4 style="margin-bottom: 5px;">Final Defense & Demo</h4>
-                            <p style="color: var(--fg-muted); font-size: 0.9rem;">Live demonstration of the NexPOS software artifact followed by Q&A on research findings.</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- === BRAND GUIDE === -->
-        <section id="brand" class="page-section">
-            <div class="dashboard-grid">
-                <div class="fui-box">
-                    <h3>Typography</h3>
-                    <div class="deco-line"></div>
-                    <h1 style="border: none;">Headline 1</h1>
-                    <h2 style="border: none;">Headline 2</h2>
-                    <p class="mono-font">Monospace Font: JetBrains Mono</p>
-                    <p>Body Font: Inter (Sans-serif). Designed for high legibility on screens.</p>
-                </div>
-
-                <div class="fui-box">
-                    <h3>Color Palette</h3>
-                    <div class="deco-line"></div>
-                    <div style="display: grid; gap: 10px;">
-                        <div style="display: flex; align-items: center; gap: 10px;">
-                            <div style="width: 40px; height: 40px; background: #0d1117; border: 1px solid #30363d;"></div>
-                            <span class="mono-font">#0d1117 (Canvas)</span>
-                        </div>
-                        <div style="display: flex; align-items: center; gap: 10px;">
-                            <div style="width: 40px; height: 40px; background: #161b22; border: 1px solid #30363d;"></div>
-                            <span class="mono-font">#161b22 (Panel)</span>
-                        </div>
-                        <div style="display: flex; align-items: center; gap: 10px;">
-                            <div style="width: 40px; height: 40px; background: #58a6ff;"></div>
-                            <span class="mono-font">#58a6ff (Accent)</span>
-                        </div>
-                        <div style="display: flex; align-items: center; gap: 10px;">
-                            <div style="width: 40px; height: 40px; background: #238636;"></div>
-                            <span class="mono-font">#238636 (Success)</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
+        <!-- MAIN VIEWPORT -->
+        <main>
             
-            <div class="fui-box">
-                <h3>UI Element Guidelines</h3>
-                <p>All containers must utilize the clipped-corner shape (FUI Style) defined in CSS variable <code>--corner-size</code>.</p>
-                <br>
-                <button class="nav-btn active">Primary Button</button>
-                <button class="nav-btn">Secondary Button</button>
-            </div>
-        </section>
+            <!-- SECTION 1: HOME DASHBOARD -->
+            <section id="home" class="active-section">
+                <h1>ផ្ទាំងគ្រប់គ្រងបេសកកម្ម</h1>
+                <p style="margin-bottom: 25px; color: var(--text-muted);">
+                    កាលបរិច្ឆេទបច្ចុប្បន្ន៖ ២០២៥-១២-១៥ | អ្នកប្រើប្រាស់៖ EIRSVi
+                </p>
 
-    </main>
+                <div class="grid-3">
+                    <div class="fui-box">
+                        <h3>ស្ថានភាពប្រព័ន្ធ</h3>
+                        <p><span class="status-dot"></span>ដំណាក់កាលស្រាវជ្រាវ៖ សកម្ម</p>
+                        <p><span class="status-dot"></span>ឃ្លាំងកូដ៖ GITHUB</p>
+                        <p><span class="status-dot"></span>ជំនាន់៖ ស្ថេរភាព (Stable)</p>
+                    </div>
+                    <div class="fui-box">
+                        <h3>គោលដៅបន្ទាប់</h3>
+                        <p style="color: var(--accent-blue); font-size: 1.4rem;">គំរូដើម V1 (Prototype)</p>
+                        <p style="color: var(--text-muted);">កាលកំណត់ក្នុងរយៈពេល ១៤ ថ្ងៃ</p>
+                        <div style="background: var(--border); height: 6px; width: 100%; margin-top: 15px; border-radius: 3px;">
+                            <div style="background: var(--accent-blue); height: 100%; width: 65%; border-radius: 3px;"></div>
+                        </div>
+                    </div>
+                    <div class="fui-box">
+                        <h3>ការជូនដំណឹង</h3>
+                        <p>> ការបញ្ចូលកូដថ្មីពី @lead_dev</p>
+                        <p>> បានធ្វើបច្ចុប្បន្នភាពឯកសារយោង</p>
+                        <p>> ការប្រជុំគ្រោងទុក៖ ម៉ោង ១៤:០០</p>
+                    </div>
+                </div>
+
+                <div class="fui-box">
+                    <h3>សេចក្តីសង្ខេប</h3>
+                    <p>
+                        គម្រោងស្រាវជ្រាវ mnnpv នេះមានគោលបំណងរចនា និងអនុវត្តប្រព័ន្ធលក់ (POS) ទំនើប ដែលដំណើរការលើ Cloud សម្រាប់សហគ្រាសលក់រាយខ្នាតតូច និងមធ្យម។
+                        សារណាស្រាវជ្រាវនេះផ្តោតលើការកែលម្អល្បឿនប្រតិបត្តិការ ការធ្វើសមកាលកម្មទិន្នន័យ (Synchronization) និងបទពិសោធន៍អ្នកប្រើប្រាស់ (UX) នៅក្នុងស្ថាបត្យកម្មដែលបែកចែក (Distributed Architecture)។
+                    </p>
+                </div>
+            </section>
+
+            <!-- SECTION 2: PROPOSAL -->
+            <section id="proposal">
+                <h1>សំណើគម្រោងស្រាវជ្រាវ</h1>
+                
+                <div class="fui-box" style="margin-bottom: 25px;">
+                    <h3 style="color: var(--accent-red);">០១. បញ្ហាប្រឈម</h3>
+                    <p>
+                        ប្រព័ន្ធ POS បែបបុរាណជួបប្រទះបញ្ហាក្នុងការអាប់ដេតយឺតយ៉ាវ និងខ្វះខាតការវិភាគទិន្នន័យតាមពេលវេលាជាក់ស្តែង។ ដំណោះស្រាយបច្ចុប្បន្នមិនទាន់អាចឆ្លើយតបទៅនឹងតម្រូវការអាជីវកម្មលក់រាយដែលមានទាំងការលក់អនឡាញ និងនៅហាងផ្ទាល់ (Hybrid) បានយ៉ាងមានប្រសិទ្ធភាពនោះទេ។
+                    </p>
+                </div>
+
+                <div class="grid-2">
+                    <div class="fui-box">
+                        <h3 style="color: var(--accent-green);">០២. គោលបំណង</h3>
+                        <ul style="list-style: none; padding-left: 10px;">
+                            <li>> វិភាគបញ្ហានៃប្រព័ន្ធចាស់</li>
+                            <li>> អភិវឌ្ឍស្ថាបត្យកម្ម API-First</li>
+                            <li>> អនុវត្តការធ្វើសមកាលកម្មទិន្នន័យរហ័ស</li>
+                            <li>> ធ្វើតេស្តជាមួយអ្នកប្រើប្រាស់ជាក់ស្តែង</li>
+                        </ul>
+                    </div>
+                    <div class="fui-box">
+                        <h3 style="color: var(--accent-orange);">០៣. វិសាលភាព</h3>
+                        <ul style="list-style: none; padding-left: 10px;">
+                            <li>> ការគ្រប់គ្រងស្តុកទំនិញ</li>
+                            <li>> ដំណើរការការទូទាត់ប្រាក់</li>
+                            <li>> ការគ្រប់គ្រងអតិថិជន (CRM Lite)</li>
+                            <li>> របាយការណ៍លក់</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="fui-box">
+                    <h3>០៤. វិធីសាស្ត្រស្រាវជ្រាវ</h3>
+                    <p>
+                        គម្រោងនេះអនុវត្តតាមវិធីសាស្ត្រ Design Science Research Methodology (DSRM)។ ការអភិវឌ្ឍនឹងធ្វើឡើងជាដំណាក់កាលៗ ដើម្បីបង្កើតជាសមិទ្ធផល (កូដ, គំនូសបំព្រួញ, គំរូ) ដែលនឹងត្រូវវាយតម្លៃដោយផ្អែកលើរង្វាស់សមត្ថភាពដែលបានកំណត់ (ដូចជាល្បឿន និងភាពងាយស្រួលក្នុងការប្រើប្រាស់)។
+                    </p>
+                </div>
+            </section>
+
+            <!-- SECTION 3: AGILE SCHEDULE -->
+            <section id="schedule">
+                <h1>កាលវិភាគ AGILE (៦ ខែ)</h1>
+                <p style="margin-bottom: 25px;">វិធីសាស្ត្រ៖ Hybrid Agile/Waterfall សម្រាប់ការអនុលោមតាមសារណា</p>
+
+                <div class="grid-3">
+                    <!-- MONTH 1-2 -->
+                    <div class="fui-box">
+                        <h3>ដំណាក់កាលទី ១៖ ការចាប់ផ្តើម</h3>
+                        <div class="timeline-item">
+                            <div class="timeline-header">ខែទី ១៖ ការស្រាវជ្រាវ</div>
+                            <p>ការពិនិត្យឯកសារយោង, ប្រមូលតម្រូវការ, ជ្រើសរើសបច្ចេកវិទ្យា។</p>
+                            <span class="fui-tag">រួចរាល់</span>
+                        </div>
+                        <div class="timeline-item">
+                            <div class="timeline-header">ខែទី ២៖ ការរចនា</div>
+                            <p>រចនា Database Schema, គូរ Wireframe UI/UX, សរសេរឯកសារស្ថាបត្យកម្ម។</p>
+                            <span class="fui-tag">កំពុងដំណើរការ</span>
+                        </div>
+                    </div>
+
+                    <!-- MONTH 3-4 -->
+                    <div class="fui-box">
+                        <h3>ដំណាក់កាលទី ២៖ ការអភិវឌ្ឍ</h3>
+                        <div class="timeline-item">
+                            <div class="timeline-header">ខែទី ៣៖ SPRINT 1-2</div>
+                            <p>បង្កើត Core API (ប្រព័ន្ធសុវត្ថិភាព, ស្តុក), ដំឡើង Database។</p>
+                            <span class="fui-tag">រង់ចាំ</span>
+                        </div>
+                        <div class="timeline-item">
+                            <div class="timeline-header">ខែទី ៤៖ SPRINT 3-4</div>
+                            <p>បង្កើត Frontend POS Interface, ភ្ជាប់ប្រព័ន្ធទូទាត់សាកល្បង។</p>
+                            <span class="fui-tag">រង់ចាំ</span>
+                        </div>
+                    </div>
+
+                    <!-- MONTH 5-6 -->
+                    <div class="fui-box">
+                        <h3>ដំណាក់កាលទី ៣៖ ការបញ្ចប់</h3>
+                        <div class="timeline-item">
+                            <div class="timeline-header">ខែទី ៥៖ ការធ្វើតេស្ត</div>
+                            <p>តេស្តមុខងារ (Unit Testing), តេស្តទទួលយកដោយអ្នកប្រើប្រាស់ (UAT)។</p>
+                            <span class="fui-tag">រង់ចាំ</span>
+                        </div>
+                        <div class="timeline-item">
+                            <div class="timeline-header">ខែទី ៦៖ ការការពារសារណា</div>
+                            <p>សរសេរសារណាបញ្ចប់, កែសម្រួលកូដចុងក្រោយ, ត្រៀមបទបង្ហាញ។</p>
+                            <span class="fui-tag">រង់ចាំ</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SECTION 4: TEAM -->
+            <section id="team">
+                <h1>សមាជិកក្រុមស្រាវជ្រាវ</h1>
+                <div class="team-grid">
+                    <!-- Member 1 -->
+                    <div class="fui-box">
+                        <div style="display: flex; align-items: center; margin-bottom: 20px;">
+                            <div style="width: 60px; height: 60px; background: var(--border); display: flex; align-items: center; justify-content: center; margin-right: 15px; border-radius: 5px;">P1</div>
+                            <div>
+                                <h3 style="margin: 0; font-size: 1.1rem;">សុខ វិបុល</h3>
+                                <span class="role-label">ប្រធានស្រាវជ្រាវ (Principal Investigator)</span>
+                            </div>
+                        </div>
+                        <p style="font-size: 0.95rem;">អ្នកទទួលខុសត្រូវលើស្ថាបត្យកម្មប្រព័ន្ធ និងការសរសេរសារណា។ ផ្តោតសំខាន់លើ Backend Scalability។</p>
+                        <div style="margin-top: 15px;">
+                            <span class="fui-tag">FULL STACK</span>
+                            <span class="fui-tag">LEAD</span>
+                        </div>
+                    </div>
+
+                    <!-- Member 2 -->
+                    <div class="fui-box">
+                        <div style="display: flex; align-items: center; margin-bottom: 20px;">
+                            <div style="width: 60px; height: 60px; background: var(--border); display: flex; align-items: center; justify-content: center; margin-right: 15px; border-radius: 5px;">P2</div>
+                            <div>
+                                <h3 style="margin: 0; font-size: 1.1rem;">ចាន់ ធារី</h3>
+                                <span class="role-label">អ្នកវិភាគទិន្នន័យ / QA</span>
+                            </div>
+                        </div>
+                        <p style="font-size: 0.95rem;">ទទួលខុសត្រូវលើសុចរិតភាពទិន្នន័យ (Database Integrity), របាយការណ៍ និងការធ្វើតេស្ត។</p>
+                        <div style="margin-top: 15px;">
+                            <span class="fui-tag">SQL</span>
+                            <span class="fui-tag">TESTING</span>
+                        </div>
+                    </div>
+
+                    <!-- Member 3 -->
+                    <div class="fui-box">
+                        <div style="display: flex; align-items: center; margin-bottom: 20px;">
+                            <div style="width: 60px; height: 60px; background: var(--border); display: flex; align-items: center; justify-content: center; margin-right: 15px; border-radius: 5px;">P3</div>
+                            <div>
+                                <h3 style="margin: 0; font-size: 1.1rem;">លី សម្បត្តិ</h3>
+                                <span class="role-label">អ្នកអភិវឌ្ឍ Frontend</span>
+                            </div>
+                        </div>
+                        <p style="font-size: 0.95rem;">ផ្តោតលើភាពងាយស្រួលនៃប្រព័ន្ធ POS, ការប្រើប្រាស់ React និងការរចនា Responsive។</p>
+                        <div style="margin-top: 15px;">
+                            <span class="fui-tag">REACT</span>
+                            <span class="fui-tag">UX/UI</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SECTION 5: BRAND -->
+            <section id="brand">
+                <h1>អត្តសញ្ញាណម៉ាក (Brand Identity)</h1>
+                
+                <div class="grid-3">
+                    <div class="fui-box">
+                        <h3>ក្ដារពណ៌ (Color Palette)</h3>
+                        <p>ផ្អែកលើ GitHub Dark Mode</p>
+                        <div style="display: flex; gap: 10px; margin-top: 15px;">
+                            <div style="width: 40px; height: 40px; background: #0d1117; border: 1px solid var(--border);"></div>
+                            <div style="width: 40px; height: 40px; background: #161b22; border: 1px solid var(--border);"></div>
+                            <div style="width: 40px; height: 40px; background: #58a6ff; border: 1px solid var(--border);"></div>
+                            <div style="width: 40px; height: 40px; background: #238636; border: 1px solid var(--border);"></div>
+                            <div style="width: 40px; height: 40px; background: #da3633; border: 1px solid var(--border);"></div>
+                        </div>
+                        <p style="margin-top: 15px; font-size: 0.85rem;">មិនប្រើពណ៌ Gradient។ ការរចនាបែប Flat UI។</p>
+                    </div>
+
+                    <div class="fui-box">
+                        <h3>ពុម្ពអក្សរ (Typography)</h3>
+                        <p style="font-family: 'Battambang', cursive; font-size: 1.4rem;">កខគឃង... ABC</p>
+                        <p style="color: var(--text-muted);">Font Family: Battambang (Khmer)</p>
+                        <p style="color: var(--text-muted);">Font Family: Fira Code (English/Code)</p>
+                    </div>
+
+                    <div class="fui-box">
+                        <h3>រាងធរណីមាត្រ (Shape)</h3>
+                        <div style="width: 120px; height: 60px; background: var(--border); clip-path: polygon(15px 0, 100% 0, 100% calc(100% - 15px), calc(100% - 15px) 100%, 0 100%, 0 15px); margin-top: 10px;"></div>
+                        <p style="margin-top: 15px;">ការកាត់ជ្រុង (Clip-Path)</p>
+                        <p style="color: var(--text-muted);">បែបបច្ចេកវិទ្យាអនាគត (Futuristic)</p>
+                    </div>
+                </div>
+
+                <div class="fui-box" style="margin-top: 25px;">
+                    <h3>ទស្សនវិជ្ជាការរចនា (Design Philosophy)</h3>
+                    <p>
+                        ចំណុចប្រទាក់នេះផ្តល់អាទិភាពដល់ដង់ស៊ីតេទិន្នន័យ និងភាពងាយស្រួលក្នុងការអាន ដែលសាកសមសម្រាប់បរិស្ថានស្រាវជ្រាវ។ វាមិនប្រើប្រាស់ការតុបតែងដែលរំខាន (ដូចជា Emoji, ស្រមោល, ឬ Gradient) នោះទេ ប៉ុន្តែផ្តោតលើសោភ័ណភាពបែប "Head-Up Display" (HUD)។
+                    </p>
+                </div>
+            </section>
+
+        </main>
+    </div>
 
     <script>
-        function switchTab(tabId) {
-            // Hide all sections
-            const sections = document.querySelectorAll('.page-section');
-            sections.forEach(s => s.classList.remove('active'));
+        // SPA Navigation Logic
+        function switchTab(sectionId, btnElement) {
+            // 1. Hide all sections
+            const sections = document.querySelectorAll('section');
+            sections.forEach(sec => {
+                sec.classList.remove('active-section');
+            });
 
-            // Deactivate all buttons
-            const btns = document.querySelectorAll('.nav-btn');
-            btns.forEach(b => b.classList.remove('active'));
+            // 2. Deactivate all buttons
+            const buttons = document.querySelectorAll('nav .fui-btn');
+            buttons.forEach(btn => {
+                btn.classList.remove('active');
+            });
 
-            // Show target section
-            document.getElementById(tabId).classList.add('active');
+            // 3. Show target section
+            document.getElementById(sectionId).classList.add('active-section');
 
-            // Find the button that was clicked (based on index matching)
-            // For simplicity in this demo, we re-highlight based on text content or ID logic
-            // But here we rely on the onclick binding updating the UI state visuals if we added IDs to buttons.
-            // A simpler visual update for the buttons in this specific script:
-            const buttons = document.getElementsByTagName('button');
-            for (let btn of buttons) {
-                if(btn.getAttribute('onclick') === `switchTab('${tabId}')`) {
-                    btn.classList.add('active');
-                }
+            // 4. Activate clicked button
+            if(btnElement) {
+                btnElement.classList.add('active');
             }
         }
     </script>

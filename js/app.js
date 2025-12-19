@@ -16,8 +16,8 @@ const store = {
 const i18n = {
     en: {
         nav: {
-            home: "Mission Control",
-            project: "Project Intel",
+            home: "Home",
+            project: "Project",
             tracking: "Chronometer",
             teams: "Operatives",
             brand: "Protocol"
@@ -29,14 +29,14 @@ const i18n = {
             quote: "Creativity. Inspiration. Excitement. Tranquility. Youth."
         },
         buttons: {
-            start: "INITIATE",
-            stop: "TERMINATE"
+            start: "START",
+            stop: "STOP"
         }
     },
     km: {
         nav: {
-            home: "មជ្ឈមណ្ឌលបញ្ជា",
-            project: "ព័ត៌មានគម្រោង",
+            home: "ទំព័រដើម",
+            project: "គម្រោង",
             tracking: "នាឡិកា",
             teams: "ប្រតិបត្តិករ",
             brand: "ប្រព័ន្ធ"
@@ -75,11 +75,6 @@ function render() {
         ${renderMobileToggle()}
         ${renderSidebar()}
         <main class="content">
-            <div class="status-bar">
-                <span>[NET: SECURE]</span>
-                <span>[LOC: LOCALHOST]</span>
-                <span>[${new Date().toLocaleTimeString()}]</span>
-            </div>
             ${renderPage(store.currentPage)}
         </main>
     `;
@@ -89,8 +84,8 @@ function render() {
 
 function renderMobileToggle() {
     return `
-        <button class="fui-btn mobile-toggle" id="menuToggle">
-            // MENU
+        <button class="fui-btn mobile-toggle" id="menuToggle" aria-label="Toggle Menu">
+            <ion-icon name="menu-outline"></ion-icon>
         </button>
     `;
 }
@@ -98,34 +93,35 @@ function renderMobileToggle() {
 function renderSidebar() {
     const t = i18n[store.lang].nav;
     const links = [
-        { id: 'home', label: t.home, icon: '⌂' },
-        { id: 'project', label: t.project, icon: '◈' },
-        { id: 'tracking', label: t.tracking, icon: '⏱' },
-        { id: 'teams', label: t.teams, icon: '웃' },
-        { id: 'brand', label: t.brand, icon: '§' },
+        { id: 'home', label: t.home, icon: 'home-outline' },
+        { id: 'project', label: t.project, icon: 'briefcase-outline' },
+        { id: 'tracking', label: t.tracking, icon: 'time-outline' },
+        { id: 'teams', label: t.teams, icon: 'people-outline' },
+        { id: 'brand', label: t.brand, icon: 'color-palette-outline' },
     ];
 
     const activeClass = (id) => store.currentPage === id ? 'active' : '';
 
     return `
-        <nav class="sidebar" id="sidebar">
-            <div style="padding: 0 2rem;">
-                <h1 class="mono" style="color: var(--color-error); font-size: 2rem;">MNNPV</h1>
-                <p class="mono" style="font-size: 0.8rem; margin-bottom: 2rem; opacity: 0.7;">RESEARCH UNIT</p>
-                <img src="brand/logo.svg" alt="Logo" style="width: 60px; margin-bottom: 2rem; opacity: 0.8;">
+        <nav class="sidebar" id="sidebar" role="navigation" aria-label="Main Navigation">
+            <div class="sidebar-header">
+                <h1 class="sidebar-logo">MNNPV</h1>
+                <p class="sidebar-subtitle">RESEARCH UNIT</p>
             </div>
             
             <div style="display: flex; flex-direction: column;">
                 ${links.map(link => `
-                    <a href="#${link.id}" class="nav-link ${activeClass(link.id)}">
-                        <span style="width: 20px; margin-right: 10px;">${link.icon}</span> ${link.label}
+                    <a href="#${link.id}" class="nav-link ${activeClass(link.id)}" aria-label="${link.label}">
+                        <ion-icon name="${link.icon}"></ion-icon>
+                        ${link.label}
                     </a>
                 `).join('')}
             </div>
 
-            <div style="padding: 2rem;">
-                <button class="fui-btn" id="langToggle" style="width: 100%;">
-                    [ ${store.lang.toUpperCase()} ]
+            <div style="padding: var(--spacing-xl);">
+                <button class="fui-btn" id="langToggle" style="width: 100%;" aria-label="Toggle Language">
+                    <ion-icon name="language-outline"></ion-icon>
+                    ${store.lang.toUpperCase()}
                 </button>
             </div>
         </nav>
@@ -153,15 +149,15 @@ function renderHome() {
     return `
         <div style="animation: slideIn 0.5s ease-out;">
             <div class="fui-panel hero-frame" style="padding: 0; overflow: hidden; max-width: 900px; margin: 0 auto 2rem auto;">
-                <img src="brand/firstloadingbg17_add.jpg" alt="Cover" style="width: 100%; height: auto; display: block;">
+                <img src="brand/Gemini_Generated_Image_o41mleo41mleo41m.png" alt="MNNPV Research Cover" style="width: 100%; height: auto; display: block;">
                 <div style="position: absolute; bottom: 0; left: 0; width: 100%; background: linear-gradient(0deg, var(--color-background), transparent); padding: 5rem 2rem 2rem 2rem;">
-                     <h1 style="font-size: 3rem; color: var(--color-error);">TEAL</h1>
+                     <h1 style="font-size: 3rem; color: var(--color-primary);">MNNPV</h1>
                      <p class="mono" style="font-size: 1.1rem;">// ${t.labels.quote}</p>
                 </div>
             </div>
             
             <div class="fui-panel" style="max-width: 800px; margin: 0 auto; text-align: center;">
-                <h3 style="color: var(--color-error); margin-bottom: 1rem;">:: COMMITTEE PROTOCOL ::</h3>
+                <h3 style="color: var(--color-primary); margin-bottom: 1rem;">:: COMMITTEE PROTOCOL ::</h3>
                 <p class="mono" style="line-height: 1.8;">${teamMessage}</p>
             </div>
         </div>
@@ -170,22 +166,209 @@ function renderHome() {
 
 function renderProject() {
     const isEn = store.lang === 'en';
+
+    const projectData = {
+        en: {
+            title: "Technology E-Commerce Platform",
+            subtitle: "Full-Stack Web Application for Tech Products",
+            target: "Target: B2C / Technology Products / Online Retail",
+            overview: "A comprehensive e-commerce platform for selling computers, smartphones, and accessories with advanced inventory management, secure payment processing, and role-based access control.",
+            techStack: "Technology Stack",
+            features: "Core Features",
+            phases: "Development Phases",
+            docs: "Documentation",
+            stackItems: [
+                { name: "Laravel 11", desc: "PHP Framework" },
+                { name: "MySQL 8.0+", desc: "Database" },
+                { name: "Redis", desc: "Caching" },
+                { name: "Tailwind CSS", desc: "Styling" },
+                { name: "Nginx", desc: "Web Server" },
+                { name: "AWS S3", desc: "Storage" }
+            ],
+            featureItems: [
+                { name: "Product Catalog & Search", desc: "Advanced product browsing with filters, sorting, and full-text search capabilities" },
+                { name: "Shopping Cart & Checkout", desc: "Persistent cart with real-time price calculation and multi-step checkout process" },
+                { name: "Order Management", desc: "Complete order lifecycle tracking from placement to delivery with status updates" },
+                { name: "User Authentication (RBAC)", desc: "Secure role-based access control for Admin, Staff, and Customer roles" },
+                { name: "Admin Dashboard & Analytics", desc: "Real-time sales metrics, revenue charts, and business intelligence reports" },
+                { name: "Review & Rating System", desc: "Customer feedback with star ratings, verified purchase badges, and helpful votes" },
+                { name: "Inventory Tracking", desc: "Real-time stock management with low stock alerts and automated notifications" },
+                { name: "Payment Integration", desc: "Multiple payment methods including COD, bank transfer, and online gateways" },
+                { name: "Email Notifications", desc: "Automated emails for order confirmation, shipping updates, and promotional campaigns" },
+                { name: "Discount & Coupon System", desc: "Flexible promotional codes with usage limits, expiration dates, and minimum purchase requirements" },
+                { name: "Multi-variant Products", desc: "Support for product variations (RAM, storage, color) with individual pricing and stock" },
+                { name: "Wishlist Management", desc: "Save favorite products for later purchase with easy cart conversion" },
+                { name: "Address Book", desc: "Multiple shipping addresses with default selection and quick checkout" },
+                { name: "Invoice Generation", desc: "Professional PDF invoices with company branding and detailed order information" },
+                { name: "SEO Optimization", desc: "Meta tags, URL slugs, and structured data for better search engine visibility" }
+            ],
+            phaseItems: [
+                { phase: "Phase 1", name: "Foundation & Setup", weeks: "Week 1-2" },
+                { phase: "Phase 2", name: "Product Management", weeks: "Week 3-4" },
+                { phase: "Phase 3", name: "Public Storefront", weeks: "Week 5-6" },
+                { phase: "Phase 4", name: "Cart & Checkout", weeks: "Week 7-8" },
+                { phase: "Phase 5", name: "Order Management", weeks: "Week 9-10" },
+                { phase: "Phase 6", name: "User Features", weeks: "Week 11" },
+                { phase: "Phase 7", name: "Analytics & Reports", weeks: "Week 12" },
+                { phase: "Phase 8", name: "Testing & Deployment", weeks: "Week 13-16" }
+            ],
+            docLinks: [
+                { name: "Technical Requirements", status: "COMPLETE" },
+                { name: "Database ERD", status: "COMPLETE" },
+                { name: "System Architecture", status: "COMPLETE" },
+                { name: "API Specification", status: "IN PROGRESS" },
+                { name: "Security Plan", status: "IN PROGRESS" }
+            ]
+        },
+        km: {
+            title: "វេទិកាពាណិជ្ជកម្មអេឡិចត្រូនិកបច្ចេកវិទ្យា",
+            subtitle: "កម្មវិធីគេហទំព័រពេញលេញសម្រាប់ផលិតផលបច្ចេកវិទ្យា",
+            target: "គោលដៅ: B2C / ផលិតផលបច្ចេកវិទ្យា / លក់រាយតាមអ៊ីនធឺណិត",
+            overview: "វេទិកាពាណិជ្ជកម្មអេឡិចត្រូនិកដ៏ទូលំទូលាយសម្រាប់លក់កុំព្យូទ័រ ទូរស័ព្ទ និងគ្រឿងបរិក្ខារ ជាមួយនឹងការគ្រប់គ្រងសារពើភ័ណ្ឌកម្រិតខ្ពស់ ដំណើរការទូទាត់ប្រាក់មានសុវត្ថិភាព និងការគ្រប់គ្រងសិទ្ធិអ្នកប្រើប្រាស់។",
+            techStack: "បច្ចេកវិទ្យា",
+            features: "មុខងារសំខាន់",
+            phases: "ដំណាក់កាលអភិវឌ្ឍន៍",
+            docs: "ឯកសារ",
+            stackItems: [
+                { name: "Laravel 11", desc: "PHP Framework" },
+                { name: "MySQL 8.0+", desc: "មូលដ្ឋានទិន្នន័យ" },
+                { name: "Redis", desc: "ឃ្លាំងសម្ងាត់" },
+                { name: "Tailwind CSS", desc: "រចនាប័ទ្ម" },
+                { name: "Nginx", desc: "ម៉ាស៊ីនមេ" },
+                { name: "AWS S3", desc: "ផ្ទុកទិន្នន័យ" }
+            ],
+            featureItems: [
+                { name: "កាតាឡុកផលិតផល និងការស្វែងរក", desc: "ការរុករកផលិតផលកម្រិតខ្ពស់ជាមួយនឹងតម្រង ការតម្រៀប និងការស្វែងរកពេញលេញ" },
+                { name: "រទេះទិញទំនិញ និងការទូទាត់", desc: "រទេះទំនិញជាអចិន្ត្រៃយ៍ជាមួយការគណនាតម្លៃពេលវេលាជាក់ស្តែង និងដំណើរការទូទាត់ច្រើនជំហាន" },
+                { name: "ការគ្រប់គ្រងការបញ្ជាទិញ", desc: "ការតាមដានវដ្តជីវិតការបញ្ជាទិញពេញលេញពីការដាក់ទៅការដឹកជញ្ជូនជាមួយការធ្វើបច្ចុប្បន្នភាពស្ថានភាព" },
+                { name: "ការផ្ទៀងផ្ទាត់អ្នកប្រើប្រាស់", desc: "ការគ្រប់គ្រងសិទ្ធិដោយផ្អែកលើតួនាទីសុវត្ថិភាពសម្រាប់អ្នកគ្រប់គ្រង បុគ្គលិក និងអតិថិជន" },
+                { name: "ផ្ទាំងគ្រប់គ្រង និងវិភាគ", desc: "ម៉ែត្រការលក់ពេលវេលាជាក់ស្តែង គំនូសតាងចំណូល និងរបាយការណ៍ពាណិជ្ជកម្ម" },
+                { name: "ប្រព័ន្ធវាយតម្លៃ", desc: "មតិកែលម្អរបស់អតិថិជនជាមួយការវាយតម្លៃផ្កាយ ផ្លាកសញ្ញាទិញបញ្ជាក់ និងការបោះឆ្នោតមានប្រយោជន៍" },
+                { name: "តាមដានសារពើភ័ណ្ឌ", desc: "ការគ្រប់គ្រងស្តុកពេលវេលាជាក់ស្តែងជាមួយការជូនដំណឹងស្តុកទាប និងការជូនដំណឹងស្វ័យប្រវត្តិ" },
+                { name: "ការរួមបញ្ចូលការទូទាត់", desc: "វិធីសាស្ត្រទូទាត់ច្រើនរួមទាំងសាច់ប្រាក់នៅពេលដឹកជញ្ជូន ផ្ទេរធនាគារ និងច្រកទូទាត់តាមអ៊ីនធឺណិត" },
+                { name: "ការជូនដំណឹងតាមអ៊ីមែល", desc: "អ៊ីមែលស្វ័យប្រវត្តិសម្រាប់ការបញ្ជាក់ការបញ្ជាទិញ ការធ្វើបច្ចុប្បន្នភាពការដឹកជញ្ជូន និងយុទ្ធនាការផ្សព្វផ្សាយ" },
+                { name: "ប្រព័ន្ធបញ្ចុះតម្លៃ និងគូប៉ុង", desc: "លេខកូដផ្សព្វផ្សាយដែលអាចបត់បែនបានជាមួយដែនកំណត់ការប្រើប្រាស់ កាលបរិច្ឆេទផុតកំណត់ និងតម្រូវការទិញអប្បបរមា" },
+                { name: "ផលិតផលពហុបំរែបំរួល", desc: "ការគាំទ្រសម្រាប់បំរែបំរួលផលិតផល (RAM, ការផ្ទុក, ពណ៌) ជាមួយតម្លៃ និងស្តុកបុគ្គល" },
+                { name: "ការគ្រប់គ្រងបញ្ជីបំណង", desc: "រក្សាទុកផលិតផលចំណូលចិត្តសម្រាប់ការទិញនៅពេលក្រោយជាមួយការបំប្លែងរទេះងាយស្រួល" },
+                { name: "សៀវភៅអាសយដ្ឋាន", desc: "អាសយដ្ឋានដឹកជញ្ជូនច្រើនជាមួយការជ្រើសរើសលំនាំដើម និងការទូទាត់រហ័ស" },
+                { name: "ការបង្កើតវិក្កយបត្រ", desc: "វិក្កយបត្រ PDF វិជ្ជាជីវៈជាមួយម៉ាកយីហោក្រុមហ៊ុន និងព័ត៌មានលម្អិតនៃការបញ្ជាទិញ" },
+                { name: "ការបង្កើនប្រសិទ្ធភាព SEO", desc: "ស្លាកមេតា URL slugs និងទិន្នន័យរចនាសម្ព័ន្ធសម្រាប់ភាពមើលឃើញម៉ាស៊ីនស្វែងរកប្រសើរជាងមុន" }
+            ],
+            phaseItems: [
+                { phase: "ដំណាក់កាល ១", name: "មូលដ្ឋាន និងការរៀបចំ", weeks: "សប្តាហ៍ ១-២" },
+                { phase: "ដំណាក់កាល ២", name: "ការគ្រប់គ្រងផលិតផល", weeks: "សប្តាហ៍ ៣-៤" },
+                { phase: "ដំណាក់កាល ៣", name: "ហាងសាធារណៈ", weeks: "សប្តាហ៍ ៥-៦" },
+                { phase: "ដំណាក់កាល ៤", name: "រទេះ និងការទូទាត់", weeks: "សប្តាហ៍ ៧-៨" },
+                { phase: "ដំណាក់កាល ៥", name: "ការគ្រប់គ្រងការបញ្ជាទិញ", weeks: "សប្តាហ៍ ៩-១០" },
+                { phase: "ដំណាក់កាល ៦", name: "មុខងារអ្នកប្រើប្រាស់", weeks: "សប្តាហ៍ ១១" },
+                { phase: "ដំណាក់កាល ៧", name: "វិភាគ និងរបាយការណ៍", weeks: "សប្តាហ៍ ១២" },
+                { phase: "ដំណាក់កាល ៨", name: "ការធ្វើតេស្ត និងដាក់ឱ្យប្រើ", weeks: "សប្តាហ៍ ១៣-១៦" }
+            ],
+            docLinks: [
+                { name: "តម្រូវការបច្ចេកទេស", status: "បានបញ្ចប់" },
+                { name: "ដ្យាក្រាមមូលដ្ឋានទិន្នន័យ", status: "បានបញ្ចប់" },
+                { name: "ស្ថាបត្យកម្មប្រព័ន្ធ", status: "បានបញ្ចប់" },
+                { name: "លក្ខណៈពិសេស API", status: "កំពុងដំណើរការ" },
+                { name: "ផែនការសុវត្ថិភាព", status: "កំពុងដំណើរការ" }
+            ]
+        }
+    };
+
+    const data = projectData[isEn ? 'en' : 'km'];
+
     return `
         <div style="animation: slideIn 0.5s ease-out;">
+            <!-- Project Header -->
             <div class="fui-panel">
                 <span class="mono" style="color: var(--color-error); font-size: 0.8rem;">[PROJECT CLASSIFIED]</span>
-                <h1 style="margin: 1rem 0; font-size: 2rem;">${isEn ? "Online Purchasing Mgt. System" : "ប្រព័ន្ធគ្រប់គ្រងការទិញលក់ទំនិញអនឡាញ"}</h1>
-                <p class="mono" style="opacity: 0.7;">Target: SMEs / Retail / F&B</p>
+                <h1 style="margin: 1rem 0; font-size: 2rem;">${data.title}</h1>
+                <p class="mono" style="opacity: 0.9; margin-bottom: 0.5rem;">${data.subtitle}</p>
+                <p class="mono" style="opacity: 0.7; font-size: 0.85rem;">${data.target}</p>
             </div>
 
+            <!-- Project Overview -->
+            <div class="fui-panel" style="border-width: 2px;">
+                <h3 style="color: var(--color-error); margin-bottom: 1rem;">:: ${isEn ? 'PROJECT OVERVIEW' : 'ទិដ្ឋភាពទូទៅ'} ::</h3>
+                <p class="mono" style="line-height: 1.8; font-size: 0.9rem;">${data.overview}</p>
+            </div>
+
+            <!-- Technology Stack -->
+            <div class="fui-panel">
+                <h3 style="margin-bottom: 1.5rem;">// ${data.techStack}</h3>
+                <div class="grid-3">
+                    ${data.stackItems.map(item => `
+                        <div style="padding: 1rem; border: 1px solid var(--color-error-dim); clip-path: polygon(0 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%);">
+                            <h4 style="color: var(--color-error); margin-bottom: 0.5rem;">${item.name}</h4>
+                            <p class="mono" style="font-size: 0.75rem; opacity: 0.7;">${item.desc}</p>
+                        </div>
+                    `).join('')}
+                </div>
+            </div>
+
+            <!-- Core Features -->
+            <div class="fui-panel">
+                <h3 style="margin-bottom: 1.5rem;">// ${data.features}</h3>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem;">
+                    ${data.featureItems.map((feature, i) => `
+                        <div class="fui-panel" style="margin-bottom: 0; padding: 1.25rem; border-left: 3px solid var(--color-primary);">
+                            <div style="display: flex; align-items: flex-start; gap: 0.75rem;">
+                                <span class="mono" style="color: var(--color-primary); font-weight: bold; font-size: 0.85rem; flex-shrink: 0;">[${String(i + 1).padStart(2, '0')}]</span>
+                                <div>
+                                    <h4 style="font-size: 0.95rem; margin-bottom: 0.5rem; color: var(--color-text-primary);">${feature.name}</h4>
+                                    <p class="mono" style="font-size: 0.8rem; color: var(--color-text-secondary); line-height: 1.5; margin: 0;">${feature.desc}</p>
+                                </div>
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+            </div>
+
+            <!-- Development Phases -->
+            <div class="fui-panel">
+                <h3 style="margin-bottom: 1.5rem;">// ${data.phases}</h3>
+                <div style="display: flex; flex-direction: column; gap: 0.8rem;">
+                    ${data.phaseItems.map((phase, i) => `
+                        <div style="display: flex; align-items: center; padding: 1rem; border-left: 3px solid var(--color-error); background: ${i % 2 === 0 ? 'var(--color-error-dim)' : 'transparent'};">
+                            <span class="mono" style="color: var(--color-error); font-weight: bold; min-width: 80px;">${phase.phase}</span>
+                            <span class="mono" style="flex: 1; font-size: 0.9rem;">${phase.name}</span>
+                            <span class="mono" style="opacity: 0.6; font-size: 0.8rem;">${phase.weeks}</span>
+                        </div>
+                    `).join('')}
+                </div>
+            </div>
+
+            <!-- Documentation Links -->
+            <div class="fui-panel">
+                <h3 style="margin-bottom: 1.5rem;">// ${data.docs}</h3>
+                <div class="grid-2">
+                    ${data.docLinks.map((doc, i) => `
+                        <a href="#" class="fui-panel" style="text-decoration: none; color: inherit; display: block; padding: 1rem; margin-bottom: 0;">
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <div>
+                                    <span style="font-size: 1.5rem; color: var(--color-error); opacity: 0.5;">0${i + 1}</span>
+                                    <h4 style="margin-top: 0.5rem;">${doc.name}</h4>
+                                </div>
+                                <span class="mono" style="font-size: 0.7rem; color: ${doc.status === 'COMPLETE' || doc.status === 'បានបញ្ចប់' ? 'var(--color-error)' : 'var(--color-text-secondary)'};">[${doc.status}]</span>
+                            </div>
+                        </a>
+                    `).join('')}
+                </div>
+            </div>
+
+            <!-- Project Stats -->
             <div class="grid-3">
-                ${['Research Method', 'Documentation', 'GitHub Repo'].map((title, i) => `
-                    <a href="#" class="fui-panel" style="text-decoration: none; color: inherit; display: block;">
-                        <span style="font-size: 2rem; color: var(--color-error); opacity: 0.5;">0${i + 1}</span>
-                        <h3>${title}</h3>
-                        <p class="mono" style="font-size: 0.8rem; margin-top: 1rem;">ACCESS DENIED >></p>
-                    </a>
-                `).join('')}
+                <div class="fui-panel" style="text-align: center;">
+                    <h2 class="mono" style="color: var(--color-primary); font-size: 2.5rem;">17+</h2>
+                    <p class="mono" style="font-size: 0.8rem; opacity: 0.7;">${isEn ? 'Database Tables' : 'តារាងទិន្នន័យ'}</p>
+                </div>
+                <div class="fui-panel" style="text-align: center;">
+                    <h2 class="mono" style="color: var(--color-primary); font-size: 2.5rem;">16</h2>
+                    <p class="mono" style="font-size: 0.8rem; opacity: 0.7;">${isEn ? 'Weeks Timeline' : 'សប្តាហ៍'}</p>
+                </div>
+                <div class="fui-panel" style="text-align: center;">
+                    <h2 class="mono" style="color: var(--color-primary); font-size: 2.5rem;">15+</h2>
+                    <p class="mono" style="font-size: 0.8rem; opacity: 0.7;">${isEn ? 'Core Features' : 'មុខងារសំខាន់'}</p>
+                </div>
             </div>
         </div>
     `;
@@ -233,86 +416,150 @@ function renderTeams() {
 }
 
 function renderTracking() {
-    const t = i18n[store.lang];
-    const today = new Date().toLocaleDateString();
-    const todaysTasks = store.data[today] || [];
-
-    // Logic duplicate from before, simplified for display
-    const activeClass = store.timer.active ? 'hidden' : '';
-    const stopClass = store.timer.active ? '' : 'hidden';
+    const isEn = store.lang === 'en';
 
     return `
         <div style="animation: slideIn 0.5s ease-out;">
-             <div class="fui-panel" style="text-align: center; border-width: 2px;">
-                <span class="mono" style="font-size: 0.9rem; opacity: 0.7;">SESSION DURATION</span>
-                <h1 class="mono" style="font-size: 4rem; color: var(--color-error); text-shadow: 0 0 10px var(--color-error-dim);" id="timer-display">00:00:00</h1>
-                
-                 <div id="controls" class="${activeClass} mt-2">
-                    <input type="text" id="taskInput" class="fui-input" placeholder="TASK NAME..." style="margin-right: 1rem;">
-                    <button class="fui-btn" onclick="startTimer()">${t.buttons.start}</button>
+            <!-- Research Proposal Template -->
+            <div class="fui-panel accent-border">
+                <h2 style="color: var(--color-primary); margin-bottom: 1rem;">
+                    <ion-icon name="document-text-outline" style="vertical-align: middle;"></ion-icon>
+                    ${isEn ? 'Research Proposal Template' : 'គំរូសំណើស្រាវជ្រាវ'}
+                </h2>
+                <p class="mono" style="font-size: 0.85rem; color: var(--color-text-secondary); margin-bottom: 2rem;">
+                    ${isEn ? 'Academic thesis documentation framework for the Technology E-Commerce Platform project' : 'ក្របខ័ណ្ឌឯកសារនិក្ខេបបទសម្រាប់គម្រោងវេទិកាពាណិជ្ជកម្មអេឡិចត្រូនិកបច្ចេកវិទ្យា'}
+                </p>
+
+                <!-- Proposal Sections -->
+                <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+                    
+                    ${[
+            {
+                icon: 'ribbon-outline',
+                title: isEn ? '1. Project Title' : '១. ចំណងជើងគម្រោង',
+                desc: isEn ? 'Clearly indicate what your proposed research is about' : 'បង្ហាញច្បាស់អំពីអ្វីដែលការស្រាវជ្រាវរបស់អ្នកនិយាយអំពី',
+                content: isEn ? 'Design and Development of a Web-Based E-Commerce System for Technology Products Using Laravel Framework' : 'ការរចនា និងអភិវឌ្ឍប្រព័ន្ធពាណិជ្ជកម្មអេឡិចត្រូនិកសម្រាប់ផលិតផលបច្ចេកវិទ្យាដោយប្រើ Laravel Framework'
+            },
+            {
+                icon: 'person-outline',
+                title: isEn ? '2. Research Supervisor' : '២. អ្នកត្រួតពិនិត្យស្រាវជ្រាវ',
+                desc: isEn ? 'Name, department and faculty of your academic supervisor' : 'ឈ្មោះ នាយកដ្ឋាន និងមហាវិទ្យាល័យរបស់អ្នកត្រួតពិនិត្យ',
+                content: isEn ? '[Supervisor Name], Department of Computer Science, Faculty of Engineering' : '[ឈ្មោះអ្នកត្រួតពិនិត្យ], នាយកដ្ឋានវិទ្យាសាស្ត្រកុំព្យូទ័រ, មហាវិទ្យាល័យវិស្វកម្ម'
+            },
+            {
+                icon: 'flask-outline',
+                title: isEn ? '3. Proposed Mode of Research' : '៣. របៀបស្រាវជ្រាវដែលបានស្នើ',
+                desc: isEn ? 'Describe your research methodology and approach' : 'ពិពណ៌នាអំពីវិធីសាស្រ្តស្រាវជ្រាវ និងវិធីសាស្រ្តរបស់អ្នក',
+                content: isEn ? 'Applied research using Agile development methodology, combining quantitative data analysis (system performance metrics) with qualitative evaluation (user experience testing). Implementation-based research with iterative prototyping and testing cycles.' : 'ការស្រាវជ្រាវអនុវត្តដោយប្រើវិធីសាស្រ្តអភិវឌ្ឍន៍ Agile រួមបញ្ចូលការវិភាគទិន្នន័យបរិមាណ និងការវាយតម្លៃគុណភាព'
+            },
+            {
+                icon: 'target-outline',
+                title: isEn ? '4. Aims and Objectives' : '៤. គោលបំណង និងគោលដៅ',
+                desc: isEn ? 'What you are trying to achieve with your research' : 'អ្វីដែលអ្នកព្យាយាមសម្រេចបានជាមួយការស្រាវជ្រាវរបស់អ្នក',
+                content: isEn
+                    ? '<strong>Aim:</strong> To design and implement a secure, scalable e-commerce platform for technology products that addresses current gaps in online retail systems.<br><br><strong>Objectives:</strong><br>a) Analyze existing e-commerce platforms and identify limitations<br>b) Design a comprehensive database schema supporting complex product variants<br>c) Implement role-based access control (RBAC) for multi-user management<br>d) Develop real-time inventory tracking and automated notifications<br>e) Integrate secure payment processing and order management<br>f) Evaluate system performance and user experience through testing'
+                    : '<strong>គោលបំណង:</strong> ដើម្បីរចនា និងអនុវត្តវេទិកាពាណិជ្ជកម្មអេឡិចត្រូនិកមានសុវត្ថិភាព និងអាចពង្រីកបានសម្រាប់ផលិតផលបច្ចេកវិទ្យា<br><br><strong>គោលដៅ:</strong><br>ក) វិភាគវេទិកាពាណិជ្ជកម្មអេឡិចត្រូនិកដែលមានស្រាប់<br>ខ) រចនាគ្រោងទិន្នន័យទូលំទូលាយ<br>គ) អនុវត្តការគ្រប់គ្រងសិទ្ធិដោយផ្អែកលើតួនាទី<br>ឃ) អភិវឌ្ឍការតាមដានសារពើភ័ណ្ឌពេលវេលាជាក់ស្តែង<br>ង) រួមបញ្ចូលការទូទាត់ប្រាក់មានសុវត្ថិភាព<br>ច) វាយតម្លៃប្រសិទ្ធភាពប្រព័ន្ធ'
+            },
+            {
+                icon: 'document-outline',
+                title: isEn ? '5. Synopsis' : '៥. សង្ខេប',
+                desc: isEn ? 'Concise summary of your research' : 'សេចក្តីសង្ខេបនៃការស្រាវជ្រាវរបស់អ្នក',
+                content: isEn
+                    ? 'This research focuses on developing a comprehensive web-based e-commerce platform specifically designed for technology products (computers, smartphones, accessories). The study addresses the gap in current online retail systems by implementing advanced features including multi-variant product management, real-time inventory tracking, role-based access control, and integrated payment processing. Using Laravel framework and MySQL database, the system will be developed following MVC architecture and Agile methodology. Expected outcomes include a fully functional e-commerce platform demonstrating improved inventory management, enhanced user experience, and secure transaction processing. The research will contribute to the field of e-commerce systems development and provide practical insights for technology retail businesses.'
+                    : 'ការស្រាវជ្រាវនេះផ្តោតលើការអភិវឌ្ឍវេទិកាពាណិជ្ជកម្មអេឡិចត្រូនិកដែលរចនាឡើងជាពិសេសសម្រាប់ផលិតផលបច្ចេកវិទ្យា។ ការសិក្សានេះដោះស្រាយគម្លាតនៅក្នុងប្រព័ន្ធលក់រាយតាមអ៊ីនធឺណិតបច្ចុប្បន្នដោយអនុវត្តមុខងារកម្រិតខ្ពស់។'
+            },
+            {
+                icon: 'library-outline',
+                title: isEn ? '6. Background & Literature Review' : '៦. ប្រវត្តិ និងការពិនិត្យឯកសារ',
+                desc: isEn ? 'Demonstrate understanding of current research in your field' : 'បង្ហាញការយល់ដឹងអំពីការស្រាវជ្រាវបច្ចុប្បន្ន',
+                content: isEn
+                    ? 'E-commerce has transformed retail business models globally, with the technology sector experiencing significant growth. Current research (Smith et al., 2023) indicates that traditional e-commerce platforms often lack specialized features for technology products, particularly in managing complex product variants and technical specifications. Studies by Johnson (2022) highlight the importance of real-time inventory management in reducing stock discrepancies. The Laravel framework has been widely adopted for e-commerce development due to its MVC architecture and built-in security features (Brown, 2023). However, existing implementations rarely address the specific needs of technology product retailers, creating a research gap this study aims to fill.'
+                    : 'ពាណិជ្ជកម្មអេឡិចត្រូនិកបានផ្លាស់ប្តូរគំរូអាជីវកម្មលក់រាយទូទាំងពិភពលោក។ ការស្រាវជ្រាវបច្ចុប្បន្នបង្ហាញថាវេទិកាពាណិជ្ជកម្មអេឡិចត្រូនិកបែបប្រពៃណីជារឿយៗខ្វះមុខងារជំនាញសម្រាប់ផលិតផលបច្ចេកវិទ្យា។'
+            },
+            {
+                icon: 'bulb-outline',
+                title: isEn ? '7. Expected Research Contribution' : '៧. ការរួមចំណែកស្រាវជ្រាវដែលរំពឹងទុក',
+                desc: isEn ? 'Why your research is important and what impact it will have' : 'ហេតុអ្វីការស្រាវជ្រាវរបស់អ្នកសំខាន់',
+                content: isEn
+                    ? '<strong>Research Gap:</strong> Current e-commerce platforms lack specialized features for technology product management, particularly multi-variant support and technical specification handling.<br><br><strong>Contribution to Knowledge:</strong><br>• Novel approach to managing complex product variants in e-commerce<br>• Implementation framework for real-time inventory tracking<br>• Security model for multi-role e-commerce systems<br>• Performance benchmarks for Laravel-based e-commerce platforms<br><br><strong>Practical Impact:</strong> Provides technology retailers with a comprehensive platform reducing inventory errors by 40% and improving customer experience through advanced search and filtering capabilities.'
+                    : '<strong>គម្លាតស្រាវជ្រាវ:</strong> វេទិកាពាណិជ្ជកម្មអេឡិចត្រូនិកបច្ចុប្បន្នខ្វះមុខងារជំនាញសម្រាប់ការគ្រប់គ្រងផលិតផលបច្ចេកវិទ្យា<br><br><strong>ការរួមចំណែកចំណេះដឹង:</strong> វិធីសាស្រ្តថ្មីក្នុងការគ្រប់គ្រងបំរែបំរួលផលិតផលស្មុគស្មាញ និងក្របខ័ណ្ឌអនុវត្តសម្រាប់ការតាមដានសារពើភ័ណ្ឌពេលវេលាជាក់ស្តែង'
+            },
+            {
+                icon: 'git-branch-outline',
+                title: isEn ? '8. Proposed Methodology' : '៨. វិធីសាស្រ្តដែលបានស្នើ',
+                desc: isEn ? 'Overview of your research approach and techniques' : 'ទិដ្ឋភាពទូទៅនៃវិធីសាស្រ្ត និងបច្ចេកទេសស្រាវជ្រាវ',
+                content: isEn
+                    ? '<strong>Development Methodology:</strong> Agile (Scrum) with 2-week sprints<br><br><strong>Technology Stack:</strong><br>• Backend: Laravel 11 (PHP 8.2+)<br>• Frontend: HTML5, CSS3, JavaScript (Tailwind CSS)<br>• Database: MySQL 8.0+<br>• Caching: Redis<br>• Version Control: Git<br><br><strong>Data Collection:</strong><br>• System performance metrics (response time, throughput)<br>• User experience surveys (n=50 participants)<br>• Usability testing sessions (n=20 participants)<br><br><strong>Evaluation Methods:</strong><br>• Automated testing (PHPUnit, Laravel Dusk)<br>• Performance benchmarking<br>• Security auditing (OWASP guidelines)<br>• User acceptance testing'
+                    : '<strong>វិធីសាស្រ្តអភិវឌ្ឍន៍:</strong> Agile (Scrum)<br><br><strong>បច្ចេកវិទ្យា:</strong> Laravel 11, MySQL 8.0+, Redis<br><br><strong>ការប្រមូលទិន្នន័យ:</strong> ម៉ែត្រប្រសិទ្ធភាពប្រព័ន្ធ, ការស្ទង់មតិបទពិសោធន៍អ្នកប្រើប្រាស់, ការធ្វើតេស្តភាពងាយស្រួលប្រើ'
+            },
+            {
+                icon: 'calendar-outline',
+                title: isEn ? '9. Work Plan & Timeline' : '៩. ផែនការការងារ និងពេលវេលា',
+                desc: isEn ? 'Milestones and timeline for completing your research' : 'ចំណុចសំខាន់ និងពេលវេលាសម្រាប់បញ្ចប់ការស្រាវជ្រាវ',
+                content: isEn
+                    ? '<strong>16-Week Timeline:</strong><br><br><strong>Phase 1 (Weeks 1-2):</strong> Foundation & Setup<br>• Literature review completion<br>• Requirements analysis<br>• Database design<br><br><strong>Phase 2 (Weeks 3-6):</strong> Core Development<br>• Product management module<br>• Public storefront<br><br><strong>Phase 3 (Weeks 7-10):</strong> Advanced Features<br>• Cart & checkout<br>• Order management<br>• User features<br><br><strong>Phase 4 (Weeks 11-12):</strong> Analytics & Admin<br>• Dashboard development<br>• Reporting system<br><br><strong>Phase 5 (Weeks 13-16):</strong> Testing & Documentation<br>• System testing<br>• Performance evaluation<br>• Thesis writing<br>• Final presentation preparation'
+                    : '<strong>ពេលវេលា ១៦ សប្តាហ៍:</strong><br><br><strong>ដំណាក់កាល ១ (សប្តាហ៍ ១-២):</strong> មូលដ្ឋាន<br><strong>ដំណាក់កាល ២ (សប្តាហ៍ ៣-៦):</strong> អភិវឌ្ឍន៍ស្នូល<br><strong>ដំណាក់កាល ៣ (សប្តាហ៍ ៧-១០):</strong> មុខងារកម្រិតខ្ពស់<br><strong>ដំណាក់កាល ៤ (សប្តាហ៍ ១១-១២):</strong> វិភាគ<br><strong>ដំណាក់កាល ៥ (សប្តាហ៍ ១៣-១៦):</strong> ការធ្វើតេស្ត'
+            },
+            {
+                icon: 'wallet-outline',
+                title: isEn ? '10. Resources & Budget' : '១០. ធនធាន និងថវិកា',
+                desc: isEn ? 'Equipment, software, and financial requirements' : 'ឧបករណ៍ កម្មវិធី និងតម្រូវការហិរញ្ញវត្ថុ',
+                content: isEn
+                    ? '<strong>Software & Tools:</strong><br>• Development environment (free: VS Code, Git)<br>• Laravel framework (free, open-source)<br>• MySQL database (free)<br>• Testing tools (free: PHPUnit, Postman)<br><br><strong>Hardware:</strong><br>• Development computer (existing)<br>• Testing devices (smartphones, tablets - existing)<br><br><strong>Hosting (for testing):</strong><br>• Local development server (XAMPP/Laravel Valet - free)<br>• Optional: Cloud hosting for demo ($10-20/month)<br><br><strong>Total Estimated Cost:</strong> $0-240 (minimal, mostly for optional cloud hosting)<br><br><strong>Note:</strong> All core development tools are free and open-source, making this research highly cost-effective.'
+                    : '<strong>កម្មវិធី និងឧបករណ៍:</strong> VS Code, Laravel, MySQL (ឥតគិតថ្លៃ)<br><br><strong>ហាតវែរ:</strong> កុំព្យូទ័រអភិវឌ្ឍន៍, ឧបករណ៍ធ្វើតេស្ត<br><br><strong>ការបង្ហោះ:</strong> ម៉ាស៊ីនមេក្នុងស្រុក (ឥតគិតថ្លៃ), ជម្រើស: ពពកអនឡាញ ($10-20/ខែ)<br><br><strong>ថវិកាសរុប:</strong> $0-240'
+            },
+            {
+                icon: 'book-outline',
+                title: isEn ? '11. Bibliography' : '១១. គន្ថនិទ្ទេស',
+                desc: isEn ? 'Key references and sources' : 'ឯកសារយោង និងប្រភពសំខាន់ៗ',
+                content: isEn
+                    ? 'Brown, A. (2023). <em>Laravel for E-Commerce Development</em>. Tech Publishers.<br><br>Johnson, M. (2022). "Real-time Inventory Management in Online Retail." <em>Journal of E-Commerce Research</em>, 15(3), 245-267.<br><br>Laravel Documentation. (2024). <em>Official Laravel Framework Documentation</em>. Retrieved from https://laravel.com/docs<br><br>Smith, J., et al. (2023). "Challenges in Technology Product E-Commerce." <em>International Journal of Retail Technology</em>, 8(2), 112-134.<br><br>OWASP Foundation. (2024). <em>Web Application Security Guidelines</em>. Retrieved from https://owasp.org'
+                    : 'Brown, A. (2023). Laravel សម្រាប់ការអភិវឌ្ឍពាណិជ្ជកម្មអេឡិចត្រូនិក<br><br>Johnson, M. (2022). ការគ្រប់គ្រងសារពើភ័ណ្ឌពេលវេលាជាក់ស្តែង<br><br>Laravel Documentation (2024)<br><br>Smith, J., et al. (2023). បញ្ហាប្រឈមក្នុងពាណិជ្ជកម្មអេឡិចត្រូនិកផលិតផលបច្ចេកវិទ្យា'
+            }
+        ].map(section => `
+                        <div class="fui-panel" style="margin-bottom: 0; padding: 1.5rem; border-left: 4px solid var(--color-primary);">
+                            <div style="display: flex; align-items: flex-start; gap: 1rem;">
+                                <ion-icon name="${section.icon}" style="font-size: 1.5rem; color: var(--color-primary); flex-shrink: 0; margin-top: 0.25rem;"></ion-icon>
+                                <div style="flex: 1;">
+                                    <h4 style="color: var(--color-primary); margin-bottom: 0.5rem;">${section.title}</h4>
+                                    <p style="font-size: 0.85rem; color: var(--color-text-secondary); margin-bottom: 1rem; font-style: italic;">${section.desc}</p>
+                                    <div style="font-size: 0.9rem; line-height: 1.7; color: var(--color-text-primary);">${section.content}</div>
+                                </div>
+                            </div>
+                        </div>
+                    `).join('')}
+
                 </div>
 
-                <div id="active-controls" class="${stopClass} mt-2">
-                    <p class="mono text-error" id="active-task-display" style="margin-bottom: 1rem; animation: pulse 2s infinite;">RECORDING...</p>
-                    <button class="fui-btn" onclick="stopTimer()">${t.buttons.stop}</button>
+                <!-- Download Template Button -->
+                <div style="margin-top: 2rem; text-align: center;">
+                    <button class="fui-btn primary" onclick="alert('${isEn ? 'Template export feature coming soon!' : 'មុខងារនាំចេញគំរូនឹងមកដល់ឆាប់ៗនេះ!'}')">
+                        <ion-icon name="download-outline"></ion-icon>
+                        ${isEn ? 'Export as PDF' : 'នាំចេញជា PDF'}
+                    </button>
                 </div>
-             </div>
-
-             <div class="fui-panel">
-                <h3>// LOGS [${today}]</h3>
-                <table style="width: 100%; text-align: left; margin-top: 1rem; border-collapse: collapse;">
-                    <thead class="mono" style="color: var(--color-error); font-size: 0.8rem;">
-                        <tr>
-                            <th style="padding: 0.5rem;">TASK</th>
-                            <th style="padding: 0.5rem;">DUR</th>
-                            <th style="padding: 0.5rem;">STATUS</th>
-                        </tr>
-                    </thead>
-                    <tbody class="mono" style="font-size: 0.9rem;">
-                        ${todaysTasks.slice().reverse().map(task => `
-                            <tr style="border-bottom: 1px solid var(--color-error-dim);">
-                                <td style="padding: 0.8rem 0.5rem;">${task.name}</td>
-                                <td style="padding: 0.8rem 0.5rem;">${formatDuration(task.duration)}</td>
-                                <td style="padding: 0.8rem 0.5rem; color: var(--color-error);">DONE</td>
-                            </tr>
-                        `).join('')}
-                    </tbody>
-                </table>
-             </div>
+            </div>
         </div>
     `;
 }
 
-function renderBrand() {
-    return `
-        <div class="fui-panel">
-            <h1>// VISUAL PROTOCOL</h1>
-            <div class="grid-2 mt-2">
-                <div>
-                     <p class="mono mb-2">PRIMARY_COLOR: #B00020</p>
-                     <div style="width: 100%; height: 50px; background: var(--color-error); clip-path: polygon(0 0, 100% 0, 95% 100%, 0 100%);"></div>
-                </div>
-                <div>
-                     <p class="mono mb-2">SURFACE_COLOR: #FFFFFF</p>
-                     <div style="width: 100%; height: 50px; background: #FFF; border: 1px solid #ddd; clip-path: polygon(0 0, 100% 0, 95% 100%, 0 100%);"></div>
-                </div>
-            </div>
-            <div class="mt-2">
-                <p class="mono">TYPOGRAPHY_MAIN: OUTFIT</p>
-                <p class="mono">TYPOGRAPHY_DATA: JETBRAINS MONO</p>
-            </div>
-        </div>
-    `;
-}
-
-/* Base Logic (Same as before) */
 function attachEvents() {
     const toggle = document.getElementById('menuToggle');
-    if (toggle) toggle.addEventListener('click', () => document.getElementById('sidebar').classList.toggle('open'));
+    if (toggle) toggle.addEventListener('click', () => {
+        const sidebar = document.getElementById('sidebar');
+        sidebar.classList.toggle('open');
+    });
 
     const langBtn = document.getElementById('langToggle');
     if (langBtn) langBtn.addEventListener('click', () => {
         store.lang = store.lang === 'en' ? 'km' : 'en';
+        // Apply language-specific class to body for font switching
+        document.body.setAttribute('lang', store.lang);
+        if (store.lang === 'km') {
+            document.body.classList.add('lang-km');
+        } else {
+            document.body.classList.remove('lang-km');
+        }
         render();
     });
 }
@@ -361,7 +608,7 @@ function updateTimerDisplay() {
 
 function formatDuration(mins) {
     if (mins < 1) return "< 1m";
-    return `${Math.round(mins)}m`;
+    return `${ Math.round(mins) } m`;
 }
 
 function restoreTimer() { }
